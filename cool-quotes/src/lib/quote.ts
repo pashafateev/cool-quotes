@@ -46,43 +46,6 @@ export function getNextQuote(state: QuoteState): { quote: Quote | null, newState
   };
 }
 
-export async function getRandomQuote(): Promise<Quote> {
-  try {
-    // Get total number of entries
-    const totalEntries = await client.getEntries({
-      content_type: 'quote',
-      limit: 1,
-    });
-
-    // Generate a random skip value
-    const skip = Math.floor(Math.random() * totalEntries.total);
-
-    // Fetch a random quote
-    const response = await client.getEntries({
-      content_type: 'quote',
-      limit: 1,
-      skip,
-    });
-
-    const quote = response.items[0];
-    const fields = quote.fields as any;
-    
-    // Extract the text content from the rich text field
-    const quoteText = fields.quote?.content?.[0]?.content?.[0]?.value || '';
-    
-    return {
-      quote: quoteText,
-      author: fields.author,
-      reference: fields.reference,
-      tags: fields.tags,
-      likes: fields.likes,
-    };
-  } catch (error) {
-    console.error('Error fetching quote:', error);
-    throw new Error('Failed to fetch quote');
-  }
-}
-
 // Add at the top with other constants
 const seenBlocks = new Set<number>();
 
@@ -138,5 +101,32 @@ export async function getRandomBlockOfQuotes(): Promise<Quote[]> {
   } catch (error) {
     console.error('Error fetching block of quotes:', error);
     throw new Error('Failed to fetch block of quotes');
+  }
+}
+
+export async function searchQuotesByWord(word: string): Promise<Quote[]> {
+  try {
+    // Search for quotes containing the word
+    const response = await client.getEntries({
+      content_type: 'quote',
+      'fields.quote[match]': word,
+      limit: 10, // Limit to 10 results for now
+    });
+
+    return response.items.map(item => {
+      const fields = item.fields as any;
+      const quoteText = fields.quote?.content?.[0]?.content?.[0]?.value || '';
+      
+      return {
+        quote: quoteText,
+        author: fields.author,
+        reference: fields.reference,
+        tags: fields.tags,
+        likes: fields.likes,
+      };
+    });
+  } catch (error) {
+    console.error('Error searching quotes:', error);
+    throw new Error('Failed to search quotes');
   }
 }

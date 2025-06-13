@@ -2,13 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import Image from "next/image";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { getRandomBlockOfQuotes, getNextQuote, Quote, QuoteState } from "@/lib/quote";
+import { getRandomBlockOfQuotes, getNextQuote, Quote, QuoteState, searchQuotesByWord } from "@/lib/quote";
+import QuoteComponent from "@/components/Quote";
 
 export default function Home() {
   const [quoteState, setQuoteState] = useState<QuoteState | null>(null);
   const [currentQuote, setCurrentQuote] = useState<Quote | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [searchResults, setSearchResults] = useState<Quote[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
 
   // Function to load a new block of quotes
   const loadNewBlock = async () => {
@@ -28,18 +30,16 @@ export default function Home() {
     setIsLoading(false);
   };
 
-  // Function to get the next quote
-  const getNextQuoteFromBlock = () => {
-    if (!quoteState) return;
-
-    const { quote, newState } = getNextQuote(quoteState);
-    
-    if (quote) {
-      setCurrentQuote(quote);
-      setQuoteState(newState);
-    } else {
-      // If we've shown all quotes, load a new block
-      loadNewBlock();
+  // Handle word clicks
+  const handleWordClick = async (word: string) => {
+    setIsSearching(true);
+    try {
+      const results = await searchQuotesByWord(word);
+      setSearchResults(results);
+    } catch (error) {
+      console.error('Error searching quotes:', error);
+    } finally {
+      setIsSearching(false);
     }
   };
 
@@ -60,11 +60,7 @@ export default function Home() {
         />
       </div>
 
-      <div className="w-full max-w-2xl flex items-center gap-4">
-        <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-          <ChevronLeft className="w-8 h-8" />
-        </button>
-
+      <div className="w-full max-w-2xl">
         <div className="flex-1 p-6 bg-white rounded-lg shadow-md">
           {isLoading ? (
             <div className="animate-pulse">
@@ -73,9 +69,10 @@ export default function Home() {
             </div>
           ) : currentQuote && (
             <>
-              <p className="text-xl text-center italic">
-                "{currentQuote.quote}"
-              </p>
+              <QuoteComponent 
+                text={currentQuote.quote} 
+                onWordClick={handleWordClick}
+              />
               {currentQuote.author && (
                 <p className="text-sm text-center mt-2 text-gray-600">
                   — {currentQuote.author}
@@ -85,9 +82,33 @@ export default function Home() {
           )}
         </div>
 
-        <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-          <ChevronRight onClick={getNextQuoteFromBlock} className="w-8 h-8" />
-        </button>
+        {/* Search Results */}
+        {isSearching ? (
+          <div className="mt-8 p-4 bg-white rounded-lg shadow-md">
+            <div className="animate-pulse">
+              <div className="h-4 bg-gray-200 rounded w-1/4 mb-4"></div>
+              <div className="space-y-3">
+                <div className="h-4 bg-gray-200 rounded"></div>
+                <div className="h-4 bg-gray-200 rounded"></div>
+                <div className="h-4 bg-gray-200 rounded"></div>
+              </div>
+            </div>
+          </div>
+        ) : searchResults.length > 0 && (
+          <div className="mt-8 p-4 bg-white rounded-lg shadow-md">
+            <h3 className="text-lg font-semibold mb-4">Related Quotes:</h3>
+            <div className="space-y-4">
+              {searchResults.map((quote, index) => (
+                <div key={index} className="border-b pb-4 last:border-b-0">
+                  <p className="text-lg italic">"{quote.quote}"</p>
+                  {quote.author && (
+                    <p className="text-sm text-gray-600 mt-1">— {quote.author}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </main>
   );
