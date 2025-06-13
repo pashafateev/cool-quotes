@@ -11,6 +11,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchResults, setSearchResults] = useState<Quote[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [showNoMatches, setShowNoMatches] = useState(false);
 
   // Function to load a new block of quotes
   const loadNewBlock = async () => {
@@ -30,12 +31,37 @@ export default function Home() {
     setIsLoading(false);
   };
 
+  // Search through current block of quotes
+  const searchCurrentBlock = (word: string): Quote[] => {
+    if (!quoteState || !currentQuote) return [];
+    
+    return quoteState.currentBlock.filter(quote => 
+      // Only include quotes that match the search AND are not the current quote
+      quote.quote.toLowerCase().includes(word.toLowerCase()) && 
+      quote.quote !== currentQuote.quote
+    );
+  };
+
   // Handle word clicks
   const handleWordClick = async (word: string) => {
     setIsSearching(true);
+    setShowNoMatches(false);
     try {
-      const results = await searchQuotesByWord(word);
-      setSearchResults(results);
+      // First search through current block
+      const currentBlockResults = searchCurrentBlock(word);
+      
+      if (currentBlockResults.length > 0) {
+        // If we found matches in current block, use those
+        setSearchResults(currentBlockResults);
+      } else {
+        // TEMPORARILY DISABLED: Contentful search
+        // const contentfulResults = await searchQuotesByWord(word);
+        // setSearchResults(contentfulResults);
+        
+        // Instead, show no matches popup
+        setShowNoMatches(true);
+        setSearchResults([]);
+      }
     } catch (error) {
       console.error('Error searching quotes:', error);
     } finally {
@@ -81,6 +107,15 @@ export default function Home() {
             </>
           )}
         </div>
+
+        {/* No Matches Popup */}
+        {showNoMatches && (
+          <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg shadow-sm">
+            <p className="text-yellow-800 text-center">
+              No matches found in current quotes. Try another word!
+            </p>
+          </div>
+        )}
 
         {/* Search Results */}
         {isSearching ? (
