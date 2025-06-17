@@ -9,7 +9,6 @@ export default function Home() {
   const [quoteState, setQuoteState] = useState<QuoteState | null>(null);
   const [currentQuote, setCurrentQuote] = useState<Quote | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [searchResults, setSearchResults] = useState<Quote[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [showNoMatches, setShowNoMatches] = useState(false);
 
@@ -51,18 +50,33 @@ export default function Home() {
       const currentBlockResults = searchCurrentBlock(word);
       
       if (currentBlockResults.length > 0) {
-        // If we found matches in current block, use those
-        setSearchResults(currentBlockResults);
+        // If we found matches in current block, randomly select one
+        const randomIndex = Math.floor(Math.random() * currentBlockResults.length);
+        setCurrentQuote(currentBlockResults[randomIndex]);
       } else {
         // Contentful search
         const contentfulResults = await searchQuotesByWord(word);
-        setSearchResults(contentfulResults);
         
-        // If no matches found, show no matches popup
-        if (contentfulResults.length === 0) {
+        if (contentfulResults.length > 0) {
+          // Randomly select one from Contentful results
+          const randomIndex = Math.floor(Math.random() * contentfulResults.length);
+          const selectedQuote = contentfulResults[randomIndex];
+          
+          // Add all found quotes to the current block
+          if (quoteState) {
+            const updatedBlock = [...quoteState.currentBlock, ...contentfulResults];
+            const updatedState = {
+              ...quoteState,
+              currentBlock: updatedBlock
+            };
+            setQuoteState(updatedState);
+          }
+          
+          setCurrentQuote(selectedQuote);
+        } else {
+          // If no matches found, show no matches popup
           setShowNoMatches(true);
         }
-        setSearchResults([]);
       }
     } catch (error) {
       console.error('Error searching quotes:', error);
@@ -125,34 +139,6 @@ export default function Home() {
             <p className="text-yellow-800 text-center">
               No matches found in current quotes. Try another word!
             </p>
-          </div>
-        )}
-
-        {/* Search Results */}
-        {isSearching ? (
-          <div className="mt-8 p-4 bg-white rounded-lg shadow-md">
-            <div className="animate-pulse">
-              <div className="h-4 bg-gray-200 rounded w-1/4 mb-4"></div>
-              <div className="space-y-3">
-                <div className="h-4 bg-gray-200 rounded"></div>
-                <div className="h-4 bg-gray-200 rounded"></div>
-                <div className="h-4 bg-gray-200 rounded"></div>
-              </div>
-            </div>
-          </div>
-        ) : searchResults.length > 0 && (
-          <div className="mt-8 p-4 bg-white rounded-lg shadow-md">
-            <h3 className="text-lg font-semibold mb-4">Related Quotes:</h3>
-            <div className="space-y-4">
-              {searchResults.map((quote, index) => (
-                <div key={index} className="border-b pb-4 last:border-b-0">
-                  <p className="text-lg italic">"{quote.quote}"</p>
-                  {quote.author && (
-                    <p className="text-sm text-gray-600 mt-1">— {quote.author}</p>
-                  )}
-                </div>
-              ))}
-            </div>
           </div>
         )}
       </div>
