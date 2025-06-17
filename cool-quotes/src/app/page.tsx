@@ -9,7 +9,6 @@ export default function Home() {
   const [quoteState, setQuoteState] = useState<QuoteState | null>(null);
   const [currentQuote, setCurrentQuote] = useState<Quote | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isSearching, setIsSearching] = useState(false);
   const [showNoMatches, setShowNoMatches] = useState(false);
 
   // Function to load a new block of quotes
@@ -43,7 +42,6 @@ export default function Home() {
 
   // Handle word clicks
   const handleWordClick = async (word: string) => {
-    setIsSearching(true);
     setShowNoMatches(false);
     try {
       // First search through current block
@@ -80,8 +78,6 @@ export default function Home() {
       }
     } catch (error) {
       console.error('Error searching quotes:', error);
-    } finally {
-      setIsSearching(false);
     }
   };
 
