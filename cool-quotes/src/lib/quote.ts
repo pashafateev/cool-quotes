@@ -20,7 +20,8 @@ export interface QuoteState {
   seenQuotes: Set<number>;  // Track indices of quotes we've shown
 }
 
-export function getNextQuote(state: QuoteState): { quote: Quote | null, newState: QuoteState } {
+
+export function getUnseenQuote(state: QuoteState): { quote: Quote | null, newState: QuoteState } {
   // If we've shown all quotes in the current block, return null
   if (state.seenQuotes.size >= state.currentBlock.length) {
     return { quote: null, newState: state };

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from "next/image";
-import { getRandomBlockOfQuotes, getNextQuote, Quote, QuoteState, searchQuotesByWord } from "@/lib/quote";
+import { getRandomBlockOfQuotes, getUnseenQuote, Quote, QuoteState, searchQuotesByWord } from "@/lib/quote";
 import QuoteComponent from "@/components/Quote";
 
 export default function Home() {
@@ -23,7 +23,7 @@ export default function Home() {
     };
     
     // Get the first quote immediately
-    const { quote, newState: updatedState } = getNextQuote(newState);
+    const { quote, newState: updatedState } = getUnseenQuote(newState);
     
     // Update both states at once
     setQuoteState(updatedState);
@@ -54,12 +54,14 @@ export default function Home() {
         // If we found matches in current block, use those
         setSearchResults(currentBlockResults);
       } else {
-        // TEMPORARILY DISABLED: Contentful search
-        // const contentfulResults = await searchQuotesByWord(word);
-        // setSearchResults(contentfulResults);
+        // Contentful search
+        const contentfulResults = await searchQuotesByWord(word);
+        setSearchResults(contentfulResults);
         
-        // Instead, show no matches popup
-        setShowNoMatches(true);
+        // If no matches found, show no matches popup
+        if (contentfulResults.length === 0) {
+          setShowNoMatches(true);
+        }
         setSearchResults([]);
       }
     } catch (error) {
@@ -106,6 +108,15 @@ export default function Home() {
               )}
             </>
           )}
+        </div>
+
+        <div className="mt-4 flex justify-center">
+          <button
+            onClick={loadNewBlock}
+            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+          >
+            New Quote
+          </button>
         </div>
 
         {/* No Matches Popup */}
