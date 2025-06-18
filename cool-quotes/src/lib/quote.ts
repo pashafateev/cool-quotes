@@ -2,6 +2,7 @@ import { createClient } from 'contentful';
 
 // Define the Quote type
 export interface Quote {
+    id: string;
     quote: string;
     author?: string;
     reference?: string;
@@ -17,29 +18,26 @@ const client = createClient({
 
 export interface QuoteState {
   currentBlock: Quote[];
-  seenQuotes: Set<number>;  // Track indices of quotes we've shown
+  seenQuotes: Set<string>;  // Now stores quote ids
 }
 
-
 export function getUnseenQuote(state: QuoteState): { quote: Quote | null, newState: QuoteState } {
-  // If we've shown all quotes in the current block, return null
-  if (state.seenQuotes.size >= state.currentBlock.length) {
+  // Filter out quotes that have already been seen (by id)
+  const unseenQuotes = state.currentBlock.filter(q => !state.seenQuotes.has(q.id));
+
+  // If all quotes have been seen, return null
+  if (unseenQuotes.length === 0) {
     return { quote: null, newState: state };
   }
 
-  // Get array of unseen quote indices
-  const unseenIndices = state.currentBlock
-    .map((_, index) => index)
-    .filter(index => !state.seenQuotes.has(index));
-
   // Pick a random unseen quote
-  const randomIndex = unseenIndices[Math.floor(Math.random() * unseenIndices.length)];
-  
-  // Create new state with the selected quote marked as seen
-  const newSeenQuotes = new Set(state.seenQuotes).add(randomIndex);
-  
+  const randomQuote = unseenQuotes[Math.floor(Math.random() * unseenQuotes.length)];
+
+  // Create new state with the selected quote id marked as seen
+  const newSeenQuotes = new Set(state.seenQuotes).add(randomQuote.id);
+
   return {
-    quote: state.currentBlock[randomIndex],
+    quote: randomQuote,
     newState: {
       currentBlock: state.currentBlock,
       seenQuotes: newSeenQuotes
@@ -86,12 +84,13 @@ export async function getRandomBlockOfQuotes(): Promise<Quote[]> {
       limit,
       skip,
     });
-
+    console.log(response.items);
     return response.items.map(item => {
       const fields = item.fields as any;
       const quoteText = fields.quote?.content?.[0]?.content?.[0]?.value || '';
       
       return {
+        id: item.sys.id,
         quote: quoteText,
         author: fields.author,
         reference: fields.reference,
@@ -119,6 +118,7 @@ export async function searchQuotesByWord(word: string): Promise<Quote[]> {
       const quoteText = fields.quote?.content?.[0]?.content?.[0]?.value || '';
       
       return {
+        id: item.sys.id,
         quote: quoteText,
         author: fields.author,
         reference: fields.reference,

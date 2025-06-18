@@ -17,7 +17,7 @@ export default function Home() {
     const newBlock = await getRandomBlockOfQuotes();
     const newState = {
       currentBlock: newBlock,
-      seenQuotes: new Set<number>()
+      seenQuotes: new Set<string>()
     };
     
     // Get the first quote immediately
