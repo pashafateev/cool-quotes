@@ -84,7 +84,7 @@ export async function getRandomBlockOfQuotes(): Promise<Quote[]> {
       limit,
       skip,
     });
-    console.log(response.items);
+  
     return response.items.map(item => {
       const fields = item.fields as any;
       const quoteText = fields.quote?.content?.[0]?.content?.[0]?.value || '';

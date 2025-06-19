@@ -20,12 +20,15 @@ export default function Home() {
       seenQuotes: new Set<string>()
     };
     
+    // Set the new block first
+    setQuoteState(newState);
+
     // Get the first quote immediately
-    const { quote, newState: updatedState } = getUnseenQuote(newState);
-    
-    // Update both states at once
-    setQuoteState(updatedState);
-    setCurrentQuote(quote);
+    const { quote } = getUnseenQuote(newState);
+    if (quote) {
+      displayQuote(quote);
+    }
+
     setIsLoading(false);
   };
 
@@ -34,9 +37,9 @@ export default function Home() {
     if (!quoteState || !currentQuote) return [];
     
     return quoteState.currentBlock.filter(quote => 
-      // Only include quotes that match the search AND are not the current quote
-      quote.quote.toLowerCase().includes(word.toLowerCase()) && 
-      quote.quote !== currentQuote.quote
+      quote.quote.toLowerCase().includes(word.toLowerCase()) &&
+      quote.quote !== currentQuote.quote &&
+      !quoteState.seenQuotes.has(quote.id)
     );
   };
 
@@ -52,17 +55,19 @@ export default function Home() {
         const randomIndex = Math.floor(Math.random() * currentBlockResults.length);
         const selectedQuote = currentBlockResults[randomIndex];
         displayQuote(selectedQuote);
-        setQuoteState(prevState => ({
-          ...prevState!,
-          currentBlock: currentBlockResults,
-        }));
       } else {
         // Contentful search
         const contentfulResults = await searchQuotesByWord(word);
 
+        // Create a local set that includes all seen quotes + the current quote
+        const updatedSeenQuotes = new Set(quoteState?.seenQuotes);
+        if (currentQuote) {
+          updatedSeenQuotes.add(currentQuote.id);
+        }
+
         // Filter out already seen quotes
         const unseenContentfulResults = contentfulResults.filter(
-          q => !quoteState?.seenQuotes.has(q.id)
+          q => !updatedSeenQuotes.has(q.id)
         );
 
         if (unseenContentfulResults.length > 0) {
@@ -96,11 +101,13 @@ export default function Home() {
   };
 
   function displayQuote(quote: Quote) {
+    console.log("Displaying quote:", quote.id, quote.quote);
     setCurrentQuote(quote);
     setQuoteState(prevState => {
       if (!prevState) return prevState;
       const newSeen = new Set(prevState.seenQuotes);
       newSeen.add(quote.id);
+      console.log("Seen quotes after adding:", Array.from(newSeen));
       return {
         ...prevState,
         seenQuotes: newSeen,
