@@ -50,29 +50,43 @@ export default function Home() {
       if (currentBlockResults.length > 0) {
         // If we found matches in current block, randomly select one
         const randomIndex = Math.floor(Math.random() * currentBlockResults.length);
-        setCurrentQuote(currentBlockResults[randomIndex]);
+        const selectedQuote = currentBlockResults[randomIndex];
+        displayQuote(selectedQuote);
+        setQuoteState(prevState => ({
+          ...prevState!,
+          currentBlock: currentBlockResults,
+        }));
       } else {
         // Contentful search
         const contentfulResults = await searchQuotesByWord(word);
-        
-        if (contentfulResults.length > 0) {
-          // Randomly select one from Contentful results
-          const randomIndex = Math.floor(Math.random() * contentfulResults.length);
-          const selectedQuote = contentfulResults[randomIndex];
-          
+
+        // Filter out already seen quotes
+        const unseenContentfulResults = contentfulResults.filter(
+          q => !quoteState?.seenQuotes.has(q.id)
+        );
+
+        if (unseenContentfulResults.length > 0) {
+          // Randomly select one from unseen Contentful results
+          const randomIndex = Math.floor(Math.random() * unseenContentfulResults.length);
+          const selectedQuote = unseenContentfulResults[randomIndex];
+          displayQuote(selectedQuote);
+
           // Add all found quotes to the current block
           if (quoteState) {
-            const updatedBlock = [...quoteState.currentBlock, ...contentfulResults];
+            const updatedBlock = [
+              ...quoteState.currentBlock,
+              ...unseenContentfulResults.filter(
+                q => !quoteState.currentBlock.some(existing => existing.id === q.id)
+              )
+            ];
             const updatedState = {
               ...quoteState,
               currentBlock: updatedBlock
             };
             setQuoteState(updatedState);
           }
-          
-          setCurrentQuote(selectedQuote);
         } else {
-          // If no matches found, show no matches popup
+          // If no unseen matches found, show no matches popup
           setShowNoMatches(true);
         }
       }
@@ -80,6 +94,19 @@ export default function Home() {
       console.error('Error searching quotes:', error);
     }
   };
+
+  function displayQuote(quote: Quote) {
+    setCurrentQuote(quote);
+    setQuoteState(prevState => {
+      if (!prevState) return prevState;
+      const newSeen = new Set(prevState.seenQuotes);
+      newSeen.add(quote.id);
+      return {
+        ...prevState,
+        seenQuotes: newSeen,
+      };
+    });
+  }
 
   // Initial load
   useEffect(() => {
