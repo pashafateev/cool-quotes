@@ -2,120 +2,59 @@
 
 import { useState, useEffect } from 'react';
 import Image from "next/image";
-import { getRandomBlockOfQuotes, getUnseenQuote, Quote, QuoteState, searchQuotesByWord } from "@/lib/quote";
+import { getRandomBlockOfQuotes, Quote, searchQuotesByWord } from "@/lib/quote";
 import QuoteComponent from "@/components/Quote";
 
 export default function Home() {
-  const [quoteState, setQuoteState] = useState<QuoteState | null>(null);
   const [currentQuote, setCurrentQuote] = useState<Quote | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showNoMatches, setShowNoMatches] = useState(false);
+  const [seenQuotes, setSeenQuotes] = useState<Set<string>>(new Set());
 
-  // Function to load a new block of quotes
-  const loadNewBlock = async () => {
+  // Use this everywhere to show a quote and mark it as seen
+  function displayQuote(quote: Quote) {
+    setCurrentQuote(quote);
+    setSeenQuotes(prev => new Set(prev).add(quote.id));
+  }
+
+  // Fetch a random quote from CMS, skipping seen ones
+  const loadRandomQuote = async () => {
     setIsLoading(true);
-    const newBlock = await getRandomBlockOfQuotes();
-    const newState = {
-      currentBlock: newBlock,
-      seenQuotes: new Set<string>()
-    };
-    
-    // Set the new block first
-    setQuoteState(newState);
-
-    // Get the first quote immediately
-    const { quote } = getUnseenQuote(newState);
-    if (quote) {
-      displayQuote(quote);
+    setShowNoMatches(false);
+    const quotes = await getRandomBlockOfQuotes();
+    const unseenQuotes = quotes.filter(q => !seenQuotes.has(q.id));
+    if (unseenQuotes.length > 0) {
+      const randomIndex = Math.floor(Math.random() * unseenQuotes.length);
+      displayQuote(unseenQuotes[randomIndex]);
+    } else {
+      setShowNoMatches(true);
     }
-
     setIsLoading(false);
   };
 
-  // Search through current block of quotes
-  const searchCurrentBlock = (word: string): Quote[] => {
-    if (!quoteState || !currentQuote) return [];
-    
-    return quoteState.currentBlock.filter(quote => 
-      quote.quote.toLowerCase().includes(word.toLowerCase()) &&
-      quote.quote !== currentQuote.quote &&
-      !quoteState.seenQuotes.has(quote.id)
-    );
-  };
-
-  // Handle word clicks
+  // Handle word clicks: always search CMS, skipping seen ones
   const handleWordClick = async (word: string) => {
     setShowNoMatches(false);
+    setIsLoading(true);
     try {
-      // First search through current block
-      const currentBlockResults = searchCurrentBlock(word);
-      
-      if (currentBlockResults.length > 0) {
-        // If we found matches in current block, randomly select one
-        const randomIndex = Math.floor(Math.random() * currentBlockResults.length);
-        const selectedQuote = currentBlockResults[randomIndex];
-        displayQuote(selectedQuote);
+      const results = await searchQuotesByWord(word);
+      const filtered = results.filter(q => !seenQuotes.has(q.id));
+      if (filtered.length > 0) {
+        const randomIndex = Math.floor(Math.random() * filtered.length);
+        displayQuote(filtered[randomIndex]);
       } else {
-        // Contentful search
-        const contentfulResults = await searchQuotesByWord(word);
-
-        // Create a local set that includes all seen quotes + the current quote
-        const updatedSeenQuotes = new Set(quoteState?.seenQuotes);
-        if (currentQuote) {
-          updatedSeenQuotes.add(currentQuote.id);
-        }
-
-        // Filter out already seen quotes
-        const unseenContentfulResults = contentfulResults.filter(
-          q => !updatedSeenQuotes.has(q.id)
-        );
-
-        if (unseenContentfulResults.length > 0) {
-          // Randomly select one from unseen Contentful results
-          const randomIndex = Math.floor(Math.random() * unseenContentfulResults.length);
-          const selectedQuote = unseenContentfulResults[randomIndex];
-          displayQuote(selectedQuote);
-
-          // Add all found quotes to the current block
-          if (quoteState) {
-            const updatedBlock = [
-              ...quoteState.currentBlock,
-              ...unseenContentfulResults.filter(
-                q => !quoteState.currentBlock.some(existing => existing.id === q.id)
-              )
-            ];
-            const updatedState = {
-              ...quoteState,
-              currentBlock: updatedBlock
-            };
-            setQuoteState(updatedState);
-          }
-        } else {
-          // If no unseen matches found, show no matches popup
-          setShowNoMatches(true);
-        }
+        setShowNoMatches(true);
       }
     } catch (error) {
       console.error('Error searching quotes:', error);
+      setShowNoMatches(true);
     }
+    setIsLoading(false);
   };
-
-  function displayQuote(quote: Quote) {
-    setCurrentQuote(quote);
-    setQuoteState(prevState => {
-      if (!prevState) return prevState;
-      const newSeen = new Set(prevState.seenQuotes);
-      newSeen.add(quote.id);
-      return {
-        ...prevState,
-        seenQuotes: newSeen,
-      };
-    });
-  }
 
   // Initial load
   useEffect(() => {
-    loadNewBlock();
+    loadRandomQuote();
   }, []);
 
   return (
@@ -154,7 +93,7 @@ export default function Home() {
 
         <div className="mt-4 flex justify-center">
           <button
-            onClick={loadNewBlock}
+            onClick={loadRandomQuote}
             className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
           >
             New Quote

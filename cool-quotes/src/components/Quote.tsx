@@ -1,7 +1,14 @@
 import React from 'react';
 
 const stopWords = new Set([
-  "the", "is", "and", "a", "to", "in", "of", "on", "for", "with"
+  "the", "is", "and", "a", "to", "in", "of", "on", "for", "with",
+  "that", "it", "which", "as", "at", "by", "from", "this", "be", "or",
+  "an", "are", "was", "were", "but", "not", "have", "has", "had", "they",
+  "you", "i", "he", "she", "we", "their", "his", "her", "its", "them",
+  "so", "if", "then", "there", "when", "where", "who", "what", "how",
+  "all", "can", "will", "would", "should", "could", "do", "does", "did",
+  "no", "yes", "about", "up", "down", "out", "over", "under", "again",
+  "more", "most", "some", "such", "only", "own", "same", "too", "very"
 ]);
 
 function cleanWord(word: string): string {
@@ -24,7 +31,7 @@ export default function Quote({ text, onWordClick }: QuoteProps) {
           <span
             key={index}
             onClick={() => onWordClick(cleaned)}
-            className="cursor-pointer hover:text-blue-600 hover:underline transition-colors duration-200"
+            className="cursor-pointer text-blue-500 hover:text-blue-600 hover:underline transition-colors duration-200"
             style={{ marginRight: "0.25em" }}
           >
             {word}{" "}

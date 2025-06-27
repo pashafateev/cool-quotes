@@ -21,30 +21,6 @@ export interface QuoteState {
   seenQuotes: Set<string>;  // Now stores quote ids
 }
 
-export function getUnseenQuote(state: QuoteState): { quote: Quote | null, newState: QuoteState } {
-  // Filter out quotes that have already been seen (by id)
-  const unseenQuotes = state.currentBlock.filter(q => !state.seenQuotes.has(q.id));
-
-  // If all quotes have been seen, return null
-  if (unseenQuotes.length === 0) {
-    return { quote: null, newState: state };
-  }
-
-  // Pick a random unseen quote
-  const randomQuote = unseenQuotes[Math.floor(Math.random() * unseenQuotes.length)];
-
-  // Create new state with the selected quote id marked as seen
-  const newSeenQuotes = new Set(state.seenQuotes).add(randomQuote.id);
-
-  return {
-    quote: randomQuote,
-    newState: {
-      currentBlock: state.currentBlock,
-      seenQuotes: newSeenQuotes
-    }
-  };
-}
-
 // Add at the top with other constants
 const seenBlocks = new Set<number>();
 
