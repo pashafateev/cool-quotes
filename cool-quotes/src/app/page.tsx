@@ -101,13 +101,11 @@ export default function Home() {
   };
 
   function displayQuote(quote: Quote) {
-    console.log("Displaying quote:", quote.id, quote.quote);
     setCurrentQuote(quote);
     setQuoteState(prevState => {
       if (!prevState) return prevState;
       const newSeen = new Set(prevState.seenQuotes);
       newSeen.add(quote.id);
-      console.log("Seen quotes after adding:", Array.from(newSeen));
       return {
         ...prevState,
         seenQuotes: newSeen,
@@ -167,7 +165,7 @@ export default function Home() {
         {showNoMatches && (
           <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg shadow-sm">
             <p className="text-yellow-800 text-center">
-              No matches found in current quotes. Try another word!
+              No matches found. Try another word!
             </p>
           </div>
         )}

@@ -110,7 +110,7 @@ export async function searchQuotesByWord(word: string): Promise<Quote[]> {
     const response = await client.getEntries({
       content_type: 'quote',
       'fields.quote[match]': word,
-      limit: 10, // Limit to 10 results for now
+      limit: 100,
     });
 
     return response.items.map(item => {
