@@ -1,9 +1,12 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import { getRandomBlockOfQuotes, Quote, searchQuotesByWord } from "@/lib/quote";
 import QuoteComponent from "@/components/Quote";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import ComingSoon from "@/components/ComingSoon";
+import { Box } from "@mui/material";
 
 export default function Home() {
   const [currentQuote, setCurrentQuote] = useState<Quote | null>(null);
@@ -14,7 +17,7 @@ export default function Home() {
   // Use this everywhere to show a quote and mark it as seen
   function displayQuote(quote: Quote) {
     setCurrentQuote(quote);
-    setSeenQuotes(prev => new Set(prev).add(quote.id));
+    setSeenQuotes((prev) => new Set(prev).add(quote.id));
   }
 
   // Fetch a random quote from CMS, skipping seen ones
@@ -22,7 +25,7 @@ export default function Home() {
     setIsLoading(true);
     setShowNoMatches(false);
     const quotes = await getRandomBlockOfQuotes();
-    const unseenQuotes = quotes.filter(q => !seenQuotes.has(q.id));
+    const unseenQuotes = quotes.filter((q) => !seenQuotes.has(q.id));
     if (unseenQuotes.length > 0) {
       const randomIndex = Math.floor(Math.random() * unseenQuotes.length);
       displayQuote(unseenQuotes[randomIndex]);
@@ -38,7 +41,7 @@ export default function Home() {
     setIsLoading(true);
     try {
       const results = await searchQuotesByWord(word);
-      const filtered = results.filter(q => !seenQuotes.has(q.id));
+      const filtered = results.filter((q) => !seenQuotes.has(q.id));
       if (filtered.length > 0) {
         const randomIndex = Math.floor(Math.random() * filtered.length);
         displayQuote(filtered[randomIndex]);
@@ -46,7 +49,7 @@ export default function Home() {
         setShowNoMatches(true);
       }
     } catch (error) {
-      console.error('Error searching quotes:', error);
+      console.error("Error searching quotes:", error);
       setShowNoMatches(true);
     }
     setIsLoading(false);
@@ -58,8 +61,27 @@ export default function Home() {
   }, []);
 
   return (
-    <main>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       <Header />
-    </main>
+      <Box
+        component="main"
+        sx={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <ComingSoon />
+      </Box>
+      <Footer />
+    </Box>
   );
 }
