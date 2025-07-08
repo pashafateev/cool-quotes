@@ -1,7 +1,8 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --font-sans: "Arial Rounded MT Bold", Plantagenet, Helvetica, Arial, sans-serif;
+  --font-sans: "Arial Rounded MT Bold", Plantagenet, Helvetica, Arial,
+    sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -16,3 +17,11 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans);
 }
+
+/* @font-face {
+  font-family: "Plantagenet-Italic";
+  src: url("/fonts/Plantagenet-Italic.woff2") format("woff2");
+  font-style: italic;
+  font-weight: normal;
+  font-display: swap;
+} */

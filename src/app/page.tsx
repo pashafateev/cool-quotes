@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Image from "next/image";
 import { getRandomBlockOfQuotes, Quote, searchQuotesByWord } from "@/lib/quote";
 import QuoteComponent from "@/components/Quote";
 import Header from "@/components/Header";
