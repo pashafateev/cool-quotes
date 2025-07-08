@@ -22,7 +22,7 @@ interface QuoteProps {
 
 export default function Quote({ text, onWordClick }: QuoteProps) {
   return (
-    <p className="text-2xl leading-relaxed">
+    <p>
       {text.split(/\s+/).map((word, index) => {
         const cleaned = cleanWord(word);
         if (stopWords.has(cleaned)) return word + " ";
@@ -31,7 +31,6 @@ export default function Quote({ text, onWordClick }: QuoteProps) {
           <span
             key={index}
             onClick={() => onWordClick(cleaned)}
-            className="cursor-pointer text-blue-500 hover:text-blue-600 hover:underline transition-colors duration-200"
             style={{ marginRight: "0.25em" }}
           >
             {word}{" "}
