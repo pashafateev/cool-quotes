@@ -2,12 +2,12 @@ import { createClient } from 'contentful';
 
 // Define the Quote type
 export interface Quote {
-    id: string;
-    quote: string;
-    author?: string;
-    reference?: string;
-    tags?: string[];
-    likes?: number;
+  id: string;
+  quote: string;
+  author?: string;
+  reference?: string;
+  tags?: string[];
+  likes?: number;
 }
 
 // Initialize Contentful client
@@ -32,10 +32,10 @@ export async function getRandomBlockOfQuotes(): Promise<Quote[]> {
     });
 
     const totalBlocks = Math.ceil(totalEntries.total / 100);
-    
+
     // Get available blocks (not seen before)
     const availableBlocks = Array.from(
-      { length: totalBlocks }, 
+      { length: totalBlocks },
       (_, i) => i
     ).filter(block => !seenBlocks.has(block));
 
@@ -48,10 +48,10 @@ export async function getRandomBlockOfQuotes(): Promise<Quote[]> {
     // Pick a random block from available ones
     const randomBlock = availableBlocks[Math.floor(Math.random() * availableBlocks.length)];
     seenBlocks.add(randomBlock);
-    
+
     const skip = randomBlock * 100;
-    const limit = randomBlock === totalBlocks - 1 
-      ? totalEntries.total - skip 
+    const limit = randomBlock === totalBlocks - 1
+      ? totalEntries.total - skip
       : 100;
 
     // Fetch the block of quotes
@@ -60,11 +60,12 @@ export async function getRandomBlockOfQuotes(): Promise<Quote[]> {
       limit,
       skip,
     });
-  
+
     return response.items.map(item => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const fields = item.fields as any;
       const quoteText = fields.quote?.content?.[0]?.content?.[0]?.value || '';
-      
+
       return {
         id: item.sys.id,
         quote: quoteText,
@@ -90,9 +91,10 @@ export async function searchQuotesByWord(word: string): Promise<Quote[]> {
     });
 
     return response.items.map(item => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const fields = item.fields as any;
       const quoteText = fields.quote?.content?.[0]?.content?.[0]?.value || '';
-      
+
       return {
         id: item.sys.id,
         quote: quoteText,

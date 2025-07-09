@@ -9,18 +9,24 @@ import ComingSoon from "@/components/ComingSoon";
 import { Box } from "@mui/material";
 
 export default function Home() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [currentQuote, setCurrentQuote] = useState<Quote | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isLoading, setIsLoading] = useState(true);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [showNoMatches, setShowNoMatches] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [seenQuotes, setSeenQuotes] = useState<Set<string>>(new Set());
 
   // Use this everywhere to show a quote and mark it as seen
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   function displayQuote(quote: Quote) {
     setCurrentQuote(quote);
     setSeenQuotes((prev) => new Set(prev).add(quote.id));
   }
 
   // Fetch a random quote from CMS, skipping seen ones
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const loadRandomQuote = async () => {
     setIsLoading(true);
     setShowNoMatches(false);
@@ -36,6 +42,7 @@ export default function Home() {
   };
 
   // Handle word clicks: always search CMS, skipping seen ones
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleWordClick = async (word: string) => {
     setShowNoMatches(false);
     setIsLoading(true);
@@ -56,6 +63,7 @@ export default function Home() {
   };
 
   // Initial load
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     loadRandomQuote();
   }, []);

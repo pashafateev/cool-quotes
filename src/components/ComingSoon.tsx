@@ -3,17 +3,23 @@ import React from "react";
 
 const Label = () => {
   return (
-    <Box sx={{ width: "904px", height: "64px" }}>
+    <Box
+      sx={{
+        width: "100%",
+        maxWidth: "904px",
+        px: 2,
+        textAlign: "center",
+      }}
+    >
       <Typography
         variant="h2"
         sx={{
-          width: "904px",
           fontFamily: "'Plantagenet-Regular', Helvetica",
           color: "#1c1d1f",
-          fontSize: "3rem",
+          fontSize: { xs: "1.5rem", sm: "2rem", md: "2.5rem", lg: "3rem" },
           textAlign: "center",
           letterSpacing: 0,
-          lineHeight: "64px",
+          lineHeight: { xs: "2rem", sm: "2.5rem", md: "3rem", lg: "4rem" },
         }}
       >
         Coming soon...
