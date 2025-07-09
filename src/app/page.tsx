@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { getRandomBlockOfQuotes, Quote, searchQuotesByWord } from "@/lib/quote";
-import QuoteComponent from "@/components/Quote";
+// import QuoteComponent from "@/components/Quote";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ComingSoon from "@/components/ComingSoon";
