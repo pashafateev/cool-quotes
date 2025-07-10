@@ -2,8 +2,8 @@
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import ComingSoon from "@/components/ComingSoon";
 import { Box } from "@mui/material";
+import Quote from "@/components/Quote";
 
 export default function Home() {
 
@@ -26,7 +26,7 @@ export default function Home() {
           alignItems: "center",
         }}
       >
-        <ComingSoon />
+        <Quote quote="This is a quote from the database in the font Plantagenet." />
       </Box>
       <Footer />
     </Box>
