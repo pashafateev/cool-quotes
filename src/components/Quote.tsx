@@ -1,21 +1,52 @@
 import { Box, Typography } from "@mui/material";
 import React from "react";
+import { stopWords, cleanWord } from "@/utils/stopWords";
 
 interface QuoteProps {
   quote: string;
-  author?: string;
-  reference?: string;
-  tags?: string[];
-  likes?: number;
+  onWordClick?: (word: string) => void;
 }
 
-const Quote: React.FC<QuoteProps> = ({
-  quote,
-//   author,
-//   reference,
-//   tags = [],
-//   likes = 0,
-}) => {
+const Quote: React.FC<QuoteProps> = ({ quote, onWordClick }) => {
+  const renderInteractiveText = (text: string) => {
+    if (!onWordClick) {
+      return text;
+    }
+
+    return text.split(/\s+/).map((word, index) => {
+      const cleaned = cleanWord(word);
+      const isStopWord = stopWords.has(cleaned);
+
+      if (isStopWord) {
+        return (
+          <span key={index} style={{ marginRight: "0.25em" }}>
+            {word}{" "}
+          </span>
+        );
+      }
+
+      return (
+        <span
+          key={index}
+          onClick={() => onWordClick(cleaned)}
+          style={{
+            marginRight: "0.25em",
+            cursor: "pointer",
+            color: "inherit",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = "#3dadff";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = "inherit";
+          }}
+        >
+          {word}{" "}
+        </span>
+      );
+    });
+  };
+
   return (
     <Box
       sx={{
@@ -31,9 +62,8 @@ const Quote: React.FC<QuoteProps> = ({
         py: { xs: 3, sm: 4, md: 5 },
       }}
     >
-      {/* Main Quote Text */}
-      <Typography
-        variant="h2"
+      <Box
+        component="div"
         sx={{
           fontFamily: "Plantagenet-Regular, Helvetica",
           fontSize: {
@@ -49,14 +79,13 @@ const Quote: React.FC<QuoteProps> = ({
             lg: "3.5rem",
           },
           color: "text.primary",
-          mb: { xs: 2, sm: 3 },
           wordWrap: "break-word",
           hyphens: "auto",
+          fontWeight: 400,
         }}
       >
-        {quote}
-      </Typography>
-
+        "{renderInteractiveText(quote)}"
+      </Box>
     </Box>
   );
 };

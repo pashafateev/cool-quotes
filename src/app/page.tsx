@@ -6,6 +6,9 @@ import { Box } from "@mui/material";
 import Quote from "@/components/Quote";
 
 export default function Home() {
+  const handleWordClick = (word: string) => {
+    console.log("Word clicked in page:", word);
+  };
 
   return (
     <Box
@@ -26,7 +29,10 @@ export default function Home() {
           alignItems: "center",
         }}
       >
-        <Quote quote="This is a quote from the database in the font Plantagenet." />
+        <Quote
+          quote="This is a quote from the database in the font Plantagenet."
+          onWordClick={handleWordClick}
+        />
       </Box>
       <Footer />
     </Box>
