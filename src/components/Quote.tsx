@@ -2,6 +2,7 @@ import { Box } from "@mui/material";
 import React from "react";
 import { stopWords, cleanWord } from "@/utils/stopWords";
 import { Quote as QuoteType } from "@/utils/searchUtils";
+import QuotationMark from "./QuotationMark";
 
 interface QuoteProps {
   quote: QuoteType;
@@ -83,8 +84,22 @@ const Quote: React.FC<QuoteProps> = ({ quote, onWordClick }) => {
           wordWrap: "break-word",
           hyphens: "auto",
           fontWeight: 400,
+          position: "relative",
+          display: "inline-block",
         }}
       >
+        {/* Quotation mark positioned relative to the text block */}
+        <Box
+          sx={{
+            position: "absolute",
+            top: { xs: "-30px", sm: "-40px", md: "-50px" },
+            left: { xs: "-25px", sm: "-30px", md: "-50px" },
+            zIndex: 1,
+          }}
+        >
+          <QuotationMark />
+        </Box>
+
         {renderInteractiveText(quote.quote)}
       </Box>
     </Box>

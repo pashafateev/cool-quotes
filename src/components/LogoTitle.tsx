@@ -97,7 +97,7 @@ const LogoTitle = () => {
             lineHeight: { xs: "1.5rem", sm: "2rem", md: "2.5rem" },
           }}
         >
-          Your invitation to a conversation through the ages.
+          A conversation through the ages.
         </Typography>
       </Box>
     </Stack>
