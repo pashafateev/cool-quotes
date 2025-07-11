@@ -37,9 +37,10 @@ const Author: React.FC<AuthorProps> = ({ quote }) => {
         sx={{
           fontFamily: "'Plantagenet-Regular', Helvetica",
           fontSize: { xs: "20px", sm: "24px", md: "28px", lg: "32px" },
-          lineHeight: 1,
+          lineHeight: 1.2,
           color: "#1c1d1f",
-          whiteSpace: "nowrap",
+          wordWrap: "break-word",
+          overflowWrap: "break-word",
         }}
       >
         <Box component="span">- {author}</Box>

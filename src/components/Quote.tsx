@@ -92,7 +92,7 @@ const Quote: React.FC<QuoteProps> = ({ quote, onWordClick }) => {
         <Box
           sx={{
             position: "absolute",
-            top: { xs: "-25px", sm: "-30px", md: "-50px" },
+            top: { xs: "-30px", sm: "-40px", md: "-50px" },
             left: { xs: "-25px", sm: "-30px", md: "-50px" },
             zIndex: 1,
           }}

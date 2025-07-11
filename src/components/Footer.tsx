@@ -36,6 +36,7 @@ const Footer = () => {
             fontWeight: 400,
             letterSpacing: "-0.32px",
             lineHeight: "20px",
+            display: { xs: "none", sm: "block" },
           }}
         >
           Web Development by Pasha
@@ -75,6 +76,7 @@ const Footer = () => {
               lineHeight: "20px",
               textAlign: { xs: "center", sm: "right" },
               marginRight: { xs: 0, sm: "16px" },
+              display: { xs: "none", sm: "block" },
             }}
           >
             Web Design by
@@ -85,6 +87,7 @@ const Footer = () => {
               width: { xs: "60px", sm: "80px" },
               height: { xs: "54px", sm: "72px" },
               objectFit: "cover",
+              display: { xs: "none", sm: "block" },
             }}
             alt="Studio Signe logo"
             src="/signe-logo.png"
