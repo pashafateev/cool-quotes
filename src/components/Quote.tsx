@@ -1,9 +1,10 @@
 import { Box, Typography } from "@mui/material";
 import React from "react";
 import { stopWords, cleanWord } from "@/utils/stopWords";
+import { Quote as QuoteType } from "@/utils/searchUtils";
 
 interface QuoteProps {
-  quote: string;
+  quote: QuoteType;
   onWordClick?: (word: string) => void;
 }
 
@@ -84,7 +85,7 @@ const Quote: React.FC<QuoteProps> = ({ quote, onWordClick }) => {
           fontWeight: 400,
         }}
       >
-        "{renderInteractiveText(quote)}"
+        "{renderInteractiveText(quote.quote)}"
       </Box>
     </Box>
   );

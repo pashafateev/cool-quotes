@@ -2,13 +2,110 @@
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { Box } from "@mui/material";
+import { Box, CircularProgress, Typography } from "@mui/material";
 import Quote from "@/components/Quote";
+import {
+  getRandomQuote,
+  semanticSearch,
+  Quote as QuoteType,
+} from "@/utils/searchUtils";
+import { useState, useEffect } from "react";
 
 export default function Home() {
-  const handleWordClick = (word: string) => {
-    console.log("Word clicked in page:", word);
+  const [currentQuote, setCurrentQuote] = useState<QuoteType | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    loadRandomQuote();
+  }, []);
+
+  const loadRandomQuote = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const quote = await getRandomQuote();
+      if (quote) {
+        setCurrentQuote(quote);
+      } else {
+        setError("No quotes found");
+      }
+    } catch (err) {
+      setError("Failed to load quote");
+      console.error("Error loading quote:", err);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const handleWordClick = async (word: string) => {
+    if (!currentQuote) return;
+
+    try {
+      console.log("Searching for:", word);
+      const results = await semanticSearch(word, currentQuote);
+      console.log("Search results:", results);
+      // TODO: Display search results in a modal or new page
+    } catch (err) {
+      console.error("Search error:", err);
+    }
+  };
+
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          minHeight: "100vh",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <Header />
+        <Box
+          component="main"
+          sx={{
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <CircularProgress />
+        </Box>
+        <Footer />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box
+        sx={{
+          minHeight: "100vh",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <Header />
+        <Box
+          component="main"
+          sx={{
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Typography color="error" variant="h6">
+            {error}
+          </Typography>
+        </Box>
+        <Footer />
+      </Box>
+    );
+  }
 
   return (
     <Box
@@ -29,10 +126,9 @@ export default function Home() {
           alignItems: "center",
         }}
       >
-        <Quote
-          quote="This is a quote from the database in the font Plantagenet."
-          onWordClick={handleWordClick}
-        />
+        {currentQuote && (
+          <Quote quote={currentQuote} onWordClick={handleWordClick} />
+        )}
       </Box>
       <Footer />
     </Box>
