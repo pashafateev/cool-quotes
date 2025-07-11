@@ -2,7 +2,7 @@
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { Box, CircularProgress, Typography } from "@mui/material";
+import { Box, CircularProgress, Typography, Button } from "@mui/material";
 import Quote from "@/components/Quote";
 import {
   getRandomQuote,
@@ -42,12 +42,21 @@ export default function Home() {
     if (!currentQuote) return;
 
     try {
+      setLoading(true);
       console.log("Searching for:", word);
       const results = await semanticSearch(word, currentQuote);
       console.log("Search results:", results);
-      // TODO: Display search results in a modal or new page
+
+      if (results && results.length > 0) {
+        // Pick a random quote from the search results
+        const randomIndex = Math.floor(Math.random() * results.length);
+        setCurrentQuote(results[randomIndex]);
+      }
     } catch (err) {
       console.error("Search error:", err);
+      setError("Failed to search for quotes");
+    } finally {
+      setLoading(false);
     }
   };
 
