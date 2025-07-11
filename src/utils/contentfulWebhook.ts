@@ -8,13 +8,43 @@ interface WebhookResult {
     errors: string[];
 }
 
+// Add these interfaces at the top after the existing WebhookResult interface
+interface ContentfulRichTextNode {
+    nodeType: string;
+    value?: string;
+    content?: ContentfulRichTextNode[];
+}
+
+interface ContentfulRichText {
+    content: ContentfulRichTextNode[];
+}
+
+interface ContentfulEntry {
+    sys: {
+        id: string;
+        type: string;
+        createdAt: string;
+        updatedAt: string;
+        publishedAt?: string;
+        contentType?: { sys: { id: string } };
+    };
+    fields: {
+        title?: { 'en-US': string };
+        quote?: { 'en-US': ContentfulRichText };
+        authors?: { 'en-US': string[] };
+        reference?: { 'en-US': string[] };
+        tags?: { 'en-US': string[] };
+        likes?: { 'en-US': number };
+    };
+}
+
 // Extract plain text from Contentful rich text
-function extractTextFromRichText(richText: any): string {
+function extractTextFromRichText(richText: ContentfulRichText | null | undefined): string {
     if (!richText || !richText.content) return '';
 
     let text = '';
 
-    function extractFromNode(node: any) {
+    function extractFromNode(node: ContentfulRichTextNode) {
         if (node.nodeType === 'text') {
             text += node.value || '';
         } else if (node.content && Array.isArray(node.content)) {
@@ -27,7 +57,7 @@ function extractTextFromRichText(richText: any): string {
 }
 
 // Convert Contentful entry to Meilisearch format
-function convertToMeilisearchFormat(entry: any): Quote {
+function convertToMeilisearchFormat(entry: ContentfulEntry): Quote {
     const fields = entry.fields || {};
 
     return {
@@ -88,7 +118,7 @@ async function deleteDocument(id: string): Promise<boolean> {
     }
 }
 
-export async function processContentfulWebhook(webhookBody: any): Promise<WebhookResult> {
+export async function processContentfulWebhook(webhookBody: ContentfulEntry): Promise<WebhookResult> {
     const result: WebhookResult = {
         processed: 0,
         errors: []

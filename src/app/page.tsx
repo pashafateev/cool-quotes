@@ -11,6 +11,7 @@ import {
 } from "@/utils/searchUtils";
 import { useState, useEffect } from "react";
 import Author from "@/components/Author";
+import { debugLog } from "@/utils/debug";
 
 export default function Home() {
   const [currentQuote, setCurrentQuote] = useState<QuoteType | null>(null);
@@ -51,9 +52,9 @@ export default function Home() {
 
     try {
       setLoading(true);
-      console.log("Searching for:", word);
+      debugLog("Searching for:", word);
       const results = await semanticSearch(word, currentQuote);
-      console.log("Search results:", results);
+      debugLog("Search results:", results);
 
       if (results && results.length > 0) {
         // Find the first quote that hasn't been seen yet
