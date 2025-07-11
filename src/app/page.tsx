@@ -16,6 +16,13 @@ export default function Home() {
   const [currentQuote, setCurrentQuote] = useState<QuoteType | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [seenQuotes, setSeenQuotes] = useState<Set<string>>(new Set());
+
+  // Helper function to display a quote and mark it as seen
+  const displayQuote = (quote: QuoteType) => {
+    setCurrentQuote(quote);
+    setSeenQuotes((prev) => new Set(prev).add(quote.id));
+  };
 
   useEffect(() => {
     loadRandomQuote();
@@ -27,7 +34,7 @@ export default function Home() {
       setError(null);
       const quote = await getRandomQuote();
       if (quote) {
-        setCurrentQuote(quote);
+        displayQuote(quote);
       } else {
         setError("No quotes found");
       }
@@ -49,9 +56,15 @@ export default function Home() {
       console.log("Search results:", results);
 
       if (results && results.length > 0) {
-        // Pick a random quote from the search results
-        const randomIndex = Math.floor(Math.random() * results.length);
-        setCurrentQuote(results[randomIndex]);
+        // Find the first quote that hasn't been seen yet
+        const unseenQuote = results.find((quote) => !seenQuotes.has(quote.id));
+
+        if (unseenQuote) {
+          displayQuote(unseenQuote);
+        } else {
+          // If all results have been seen, just pick the first one
+          displayQuote(results[0]);
+        }
       }
     } catch (err) {
       console.error("Search error:", err);
