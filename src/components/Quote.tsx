@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import React from "react";
 import { stopWords, cleanWord } from "@/utils/stopWords";
 import { Quote as QuoteType } from "@/utils/searchUtils";
@@ -85,7 +85,7 @@ const Quote: React.FC<QuoteProps> = ({ quote, onWordClick }) => {
           fontWeight: 400,
         }}
       >
-        "{renderInteractiveText(quote.quote)}"
+        {renderInteractiveText(quote.quote)}
       </Box>
     </Box>
   );

@@ -2,7 +2,7 @@
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { Box, CircularProgress, Typography, Button } from "@mui/material";
+import { Box, CircularProgress, Typography } from "@mui/material";
 import Quote from "@/components/Quote";
 import {
   getRandomQuote,
