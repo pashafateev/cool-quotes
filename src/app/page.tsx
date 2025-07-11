@@ -10,6 +10,7 @@ import {
   Quote as QuoteType,
 } from "@/utils/searchUtils";
 import { useState, useEffect } from "react";
+import Author from "@/components/Author";
 
 export default function Home() {
   const [currentQuote, setCurrentQuote] = useState<QuoteType | null>(null);
@@ -138,6 +139,7 @@ export default function Home() {
         {currentQuote && (
           <Quote quote={currentQuote} onWordClick={handleWordClick} />
         )}
+        <Author quote={currentQuote} />
       </Box>
       <Footer />
     </Box>
