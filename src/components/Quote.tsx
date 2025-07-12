@@ -34,13 +34,18 @@ const Quote: React.FC<QuoteProps> = ({ quote, onWordClick }) => {
           style={{
             marginRight: "0.25em",
             cursor: "pointer",
-            color: "inherit",
+            color: "#3dadff",
+            transition: "all 0.2s ease-in-out",
+            display: "inline-block",
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.color = "#3dadff";
+            e.currentTarget.style.transform = "scale(1.05)";
+            e.currentTarget.style.textShadow =
+              "0 0 8px rgba(61, 173, 255, 0.3)";
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.color = "inherit";
+            e.currentTarget.style.transform = "scale(1)";
+            e.currentTarget.style.textShadow = "none";
           }}
         >
           {word}{" "}
