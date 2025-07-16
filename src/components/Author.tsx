@@ -38,7 +38,7 @@ const Author: React.FC<AuthorProps> = ({ quote }) => {
           fontFamily: "'Plantagenet-Regular', Helvetica",
           fontSize: { xs: "20px", sm: "24px", md: "28px", lg: "32px" },
           lineHeight: 1.2,
-          color: "#1c1d1f",
+          color: "text.primary",
           wordWrap: "break-word",
           overflowWrap: "break-word",
         }}

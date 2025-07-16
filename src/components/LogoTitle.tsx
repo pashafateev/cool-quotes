@@ -1,14 +1,21 @@
+"use client";
+
 import { Box, Stack, Typography } from "@mui/material";
 import React from "react";
+import { useTheme } from "@/theme/ThemeRegistry";
 
 const LogoTitle = () => {
+  const themeContext = useTheme();
+
   const Logo = () => (
     <Box
       component="div"
       sx={{
         width: { xs: 80, sm: 100, md: 120, lg: 154 },
         height: { xs: 60, sm: 75, md: 90, lg: 114 },
-        backgroundImage: "url('/logo-lm.svg')",
+        backgroundImage: themeContext.isDark
+          ? "url('/logo-dm.svg')"
+          : "url('/logo-lm.svg')",
         backgroundSize: "contain",
         backgroundRepeat: "no-repeat",
         backgroundPosition: "center",
@@ -49,7 +56,7 @@ const LogoTitle = () => {
               md: "3.5rem",
               lg: "3.5rem",
             },
-            color: "rgba(28, 30, 31, 1)",
+            color: "text.primary",
             whiteSpace: "nowrap",
           }}
         >
@@ -71,7 +78,7 @@ const LogoTitle = () => {
               md: "3.5rem",
               lg: "3.5rem",
             },
-            color: "rgba(28, 30, 31, 1)",
+            color: "text.primary",
             whiteSpace: "nowrap",
           }}
         >
@@ -91,7 +98,7 @@ const LogoTitle = () => {
           sx={{
             fontFamily: "'Plantagenet-Italic', Helvetica",
             fontStyle: "italic",
-            color: "#1c1d1f",
+            color: "text.primary",
             textAlign: { xs: "center", sm: "center" },
             fontSize: { xs: "1rem", sm: "1.25rem", md: "1.5rem" },
             lineHeight: { xs: "1.5rem", sm: "2rem", md: "2.5rem" },
