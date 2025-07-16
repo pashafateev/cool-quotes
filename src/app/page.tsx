@@ -148,7 +148,6 @@ export default function Home() {
           flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
-          minHeight: "calc(100vh - 200px)", // Ensure minimum height for scrolling
         }}
       >
         {currentQuote && (
