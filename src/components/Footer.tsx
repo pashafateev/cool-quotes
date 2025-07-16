@@ -1,7 +1,11 @@
 import { Box, Container, Typography } from "@mui/material";
 import React from "react";
+import Link from "next/link";
+import { useTheme } from "@/theme/ThemeRegistry";
 
 const Footer = () => {
+  const themeContext = useTheme();
+
   return (
     <Box
       component="footer"
@@ -15,6 +19,7 @@ const Footer = () => {
         alignItems: "center",
         justifyContent: "center",
         py: { xs: 2, sm: 0 },
+        marginTop: "auto", // This pushes it to the bottom
       }}
     >
       <Container
@@ -22,34 +27,45 @@ const Footer = () => {
         sx={{
           display: "flex",
           flexDirection: { xs: "column", sm: "row" },
-          justifyContent: "space-between",
-          alignItems: "center",
+          justifyContent: "space-around",
+          alignItems: "flex-start",
           gap: { xs: 2, sm: 0 },
           textAlign: { xs: "center", sm: "left" },
         }}
       >
-        <Typography
-          variant="h6"
-          sx={{
-            color: "primary.main",
-            fontSize: { xs: "14px", sm: "16px" },
-            fontWeight: 400,
-            letterSpacing: "-0.32px",
-            lineHeight: "20px",
-            display: { xs: "none", sm: "block" },
-          }}
+        <Link
+          href="https://pashafateev.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ textDecoration: "none" }}
         >
-          Web Development by Pasha
-        </Typography>
+          <Typography
+            variant="h6"
+            sx={{
+              color: "secondary.main",
+              fontSize: { xs: "12px", sm: "14px" },
+              fontWeight: 400,
+              letterSpacing: "-0.32px",
+              lineHeight: "18px",
+              display: { xs: "none", sm: "block" },
+              cursor: "pointer",
+              "&:hover": {
+                textDecoration: "underline",
+              },
+            }}
+          >
+            Web Development by Pasha
+          </Typography>
+        </Link>
 
         <Typography
           variant="h6"
           sx={{
             color: "text.primary",
-            fontSize: { xs: "14px", sm: "16px" },
+            fontSize: { xs: "12px", sm: "14px" },
             fontWeight: 400,
             letterSpacing: "-0.32px",
-            lineHeight: "20px",
+            lineHeight: "18px",
             textAlign: { xs: "center", sm: "center" },
           }}
         >
@@ -61,37 +77,61 @@ const Footer = () => {
         <Box
           sx={{
             display: "flex",
-            alignItems: "center",
+            alignItems: "flex-start",
             flexDirection: { xs: "column", sm: "row" },
             gap: { xs: 1, sm: 0 },
           }}
         >
-          <Typography
-            variant="h6"
-            sx={{
-              color: "primary.main",
-              fontSize: { xs: "14px", sm: "16px" },
-              fontWeight: 400,
-              letterSpacing: "-0.32px",
-              lineHeight: "20px",
-              textAlign: { xs: "center", sm: "right" },
-              marginRight: { xs: 0, sm: "16px" },
-              display: { xs: "none", sm: "block" },
-            }}
+          <Link
+            href="https://studiosigne.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ textDecoration: "none" }}
           >
-            Web Design by
-          </Typography>
-          <Box
-            component="img"
-            sx={{
-              width: { xs: "60px", sm: "80px" },
-              height: { xs: "54px", sm: "72px" },
-              objectFit: "cover",
-              display: { xs: "none", sm: "block" },
-            }}
-            alt="Studio Signe logo"
-            src="/signe-logo.png"
-          />
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "flex-start",
+                flexDirection: { xs: "column", sm: "row" },
+                gap: { xs: 1, sm: 0 },
+                cursor: "pointer",
+              }}
+            >
+              <Typography
+                variant="h6"
+                sx={{
+                  color: "secondary.main",
+                  fontSize: { xs: "12px", sm: "14px" },
+                  fontWeight: 400,
+                  letterSpacing: "-0.32px",
+                  lineHeight: "18px",
+                  textAlign: { xs: "center", sm: "right" },
+                  marginRight: { xs: 0, sm: "16px" },
+                  display: { xs: "none", sm: "block" },
+                  "&:hover": {
+                    textDecoration: "underline",
+                  },
+                }}
+              >
+                Web Design by
+              </Typography>
+              <Box
+                component="img"
+                sx={{
+                  width: { xs: "50px", sm: "70px" },
+                  height: { xs: "45px", sm: "63px" },
+                  objectFit: "cover",
+                  display: { xs: "none", sm: "block" },
+                }}
+                alt="Studio Signe logo"
+                src={
+                  themeContext.isDark
+                    ? "/signe-logo-dm.png"
+                    : "/signe-logo-lm.png"
+                }
+              />
+            </Box>
+          </Link>
         </Box>
       </Container>
     </Box>

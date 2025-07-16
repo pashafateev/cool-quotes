@@ -1,3 +1,5 @@
+"use client";
+
 import { Box } from "@mui/material";
 import React from "react";
 import { stopWords, cleanWord } from "@/utils/stopWords";
@@ -21,35 +23,31 @@ const Quote: React.FC<QuoteProps> = ({ quote, onWordClick }) => {
 
       if (isStopWord) {
         return (
-          <span key={index} style={{ marginRight: "0.25em" }}>
+          <Box key={index} component="span" sx={{ marginRight: "0.25em" }}>
             {word}{" "}
-          </span>
+          </Box>
         );
       }
 
       return (
-        <span
+        <Box
           key={index}
+          component="span"
           onClick={() => onWordClick(cleaned)}
-          style={{
+          sx={{
             marginRight: "0.25em",
             cursor: "pointer",
-            color: "#3dadff",
+            color: "secondary.main",
             transition: "all 0.2s ease-in-out",
             display: "inline-block",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = "scale(1.05)";
-            e.currentTarget.style.textShadow =
-              "0 0 8px rgba(61, 173, 255, 0.3)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = "scale(1)";
-            e.currentTarget.style.textShadow = "none";
+            "&:hover": {
+              transform: "scale(1.05)",
+              textShadow: "0 0 8px rgba(61, 173, 255, 0.3)",
+            },
           }}
         >
           {word}{" "}
-        </span>
+        </Box>
       );
     });
   };
