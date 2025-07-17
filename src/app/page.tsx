@@ -9,33 +9,48 @@ import {
   semanticSearch,
   Quote as QuoteType,
 } from "@/utils/searchUtils";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Author from "@/components/Author";
 import { debugLog } from "@/utils/debug";
+import React from "react";
 
 export default function Home() {
-  const [currentQuote, setCurrentQuote] = useState<QuoteType | null>(null);
+  const [quotes, setQuotes] = useState<QuoteType[]>([]);
+  const [currentQuoteIndex, setCurrentQuoteIndex] = useState<number>(-1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [seenQuotes, setSeenQuotes] = useState<Set<string>>(new Set());
+  const hasInitialized = useRef(false);
 
-  // Helper function to display a quote and mark it as seen
-  const displayQuote = (quote: QuoteType) => {
-    setCurrentQuote(quote);
+  // Helper function to add a quote to the array and mark it as seen
+  const addQuote = (quote: QuoteType) => {
+    debugLog("Adding quote:", quote.id, "Current quotes count:", quotes.length);
+    setQuotes((prev) => [...prev, quote]);
+    setCurrentQuoteIndex((prev) => prev + 1);
     setSeenQuotes((prev) => new Set(prev).add(quote.id));
   };
 
+  // Get the current quote from the array
+  const currentQuote =
+    currentQuoteIndex >= 0 ? quotes[currentQuoteIndex] : null;
+
   useEffect(() => {
-    loadRandomQuote();
+    if (!hasInitialized.current) {
+      debugLog("useEffect running - loading random quote");
+      hasInitialized.current = true;
+      loadRandomQuote();
+    }
   }, []);
 
   const loadRandomQuote = async () => {
     try {
+      debugLog("loadRandomQuote called");
       setLoading(true);
       setError(null);
       const quote = await getRandomQuote();
+      debugLog("Got quote:", quote);
       if (quote) {
-        displayQuote(quote);
+        addQuote(quote);
       } else {
         setError("No quotes found");
       }
@@ -61,10 +76,11 @@ export default function Home() {
         const unseenQuote = results.find((quote) => !seenQuotes.has(quote.id));
 
         if (unseenQuote) {
-          displayQuote(unseenQuote);
+          addQuote(unseenQuote);
         } else {
+          // TODO: Add a way to get a random quote that hasn't been seen yet
           // If all results have been seen, just pick the first one
-          displayQuote(results[0]);
+          addQuote(results[0]);
         }
       }
     } catch (err) {
@@ -150,10 +166,16 @@ export default function Home() {
           alignItems: "center",
         }}
       >
-        {currentQuote && (
+        {/* {currentQuote && (
           <Quote quote={currentQuote} onWordClick={handleWordClick} />
         )}
-        <Author quote={currentQuote} />
+        <Author quote={currentQuote} /> */}
+        {quotes.map((quote, i) => (
+          <React.Fragment key={`quote_${i}`}>
+            <Quote quote={quote} onWordClick={handleWordClick} />
+            <Author quote={quote} />
+          </React.Fragment>
+        ))}
       </Box>
       <Footer />
     </Box>
