@@ -3,19 +3,18 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Box, CircularProgress, Typography } from "@mui/material";
-import Quote from "@/components/Quote";
+import Card from "@/components/Card";
 import {
   getRandomQuote,
-  semanticSearch,
+  searchQuotes,
   Quote as QuoteType,
 } from "@/utils/searchUtils";
 import { useState, useEffect, useRef } from "react";
-import Author from "@/components/Author";
 import { debugLog } from "@/utils/debug";
-import React from "react";
+import { getColorByHash } from "@/utils/colorUtils";
 
 export default function Home() {
-  const [quotes, setQuotes] = useState<QuoteType[]>([]);
+  const [currentQuotes, setCurrentQuotes] = useState<QuoteType[]>([]);
   const [currentQuoteIndex, setCurrentQuoteIndex] = useState<number>(-1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -24,15 +23,15 @@ export default function Home() {
 
   // Helper function to add a quote to the array and mark it as seen
   const addQuote = (quote: QuoteType) => {
-    debugLog("Adding quote:", quote.id, "Current quotes count:", quotes.length);
-    setQuotes((prev) => [...prev, quote]);
+    debugLog("Adding quote:", quote.id, "Current quotes count:", currentQuotes.length);
+    setCurrentQuotes((prev) => [...prev, quote]);
     setCurrentQuoteIndex((prev) => prev + 1);
     setSeenQuotes((prev) => new Set(prev).add(quote.id));
   };
 
   // Get the current quote from the array
   const currentQuote =
-    currentQuoteIndex >= 0 ? quotes[currentQuoteIndex] : null;
+    currentQuoteIndex >= 0 ? currentQuotes[currentQuoteIndex] : null;
 
   useEffect(() => {
     if (!hasInitialized.current) {
@@ -68,7 +67,7 @@ export default function Home() {
     try {
       setLoading(true);
       debugLog("Searching for:", word);
-      const results = await semanticSearch(word, currentQuote);
+      const results = await searchQuotes(word, currentQuote);
       debugLog("Search results:", results);
 
       if (results && results.length > 0) {
@@ -170,11 +169,14 @@ export default function Home() {
           <Quote quote={currentQuote} onWordClick={handleWordClick} />
         )}
         <Author quote={currentQuote} /> */}
-        {quotes.map((quote, i) => (
-          <React.Fragment key={`quote_${i}`}>
-            <Quote quote={quote} onWordClick={handleWordClick} />
-            <Author quote={quote} />
-          </React.Fragment>
+        {currentQuotes.map((quote, i) => (
+          <Card
+            key={`quote_${i}`}
+            q={quote}
+            onWordClick={handleWordClick}
+            color={getColorByHash(quote.id)}
+            i={i}
+          />
         ))}
       </Box>
       <Footer />
