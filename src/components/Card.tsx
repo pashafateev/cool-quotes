@@ -12,8 +12,6 @@ interface CardProps {
 }
 
 const Card = ({ q, onWordClick, color, i }: CardProps) => {
-  const { quote, authors, references } = q;
-
   return (
     <Box
       sx={{
