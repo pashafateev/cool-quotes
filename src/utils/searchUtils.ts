@@ -9,9 +9,10 @@ export interface Quote {
     createdAt: string;
     updatedAt: string;
     publishedAt: string;
+    color?: string; // Optional color property for UI styling
 }
 
-export async function semanticSearch(query: string, sourceQuote: Quote): Promise<Quote[]> {
+export async function searchQuotes(query: string, sourceQuote: Quote): Promise<Quote[]> {
     try {
         const res = await fetch('/api/search', {
             method: 'POST',
@@ -39,7 +40,6 @@ export async function semanticSearch(query: string, sourceQuote: Quote): Promise
     }
 }
 
-// Get a random quote from the database
 export async function getRandomQuote(): Promise<Quote | null> {
     try {
         const res = await fetch('/api/quotes');

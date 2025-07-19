@@ -3,86 +3,75 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Box, CircularProgress, Typography } from "@mui/material";
-import Quote from "@/components/Quote";
-import {
-  getRandomQuote,
-  semanticSearch,
-  Quote as QuoteType,
-} from "@/utils/searchUtils";
-import { useState, useEffect } from "react";
-import Author from "@/components/Author";
-import { debugLog } from "@/utils/debug";
+import Card from "@/components/Card";
+import { useQuoteManager } from "@/hooks/useQuoteManager";
+import { useRef, useEffect, useState } from "react";
+import { useScroll } from "framer-motion";
 
-export default function Home() {
-  const [currentQuote, setCurrentQuote] = useState<QuoteType | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [seenQuotes, setSeenQuotes] = useState<Set<string>>(new Set());
-
-  // Helper function to display a quote and mark it as seen
-  const displayQuote = (quote: QuoteType) => {
-    setCurrentQuote(quote);
-    setSeenQuotes((prev) => new Set(prev).add(quote.id));
-  };
+// Client-only wrapper component
+function ClientOnly({ children }: { children: React.ReactNode }) {
+  const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {
-    loadRandomQuote();
+    setHasMounted(true);
   }, []);
 
-  const loadRandomQuote = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const quote = await getRandomQuote();
-      if (quote) {
-        displayQuote(quote);
-      } else {
-        setError("No quotes found");
-      }
-    } catch (err) {
-      setError("Failed to load quote");
-      console.error("Error loading quote:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  if (!hasMounted) {
+    return null;
+  }
 
-  const handleWordClick = async (word: string) => {
-    if (!currentQuote) return;
+  return <>{children}</>;
+}
 
-    try {
-      setLoading(true);
-      debugLog("Searching for:", word);
-      const results = await semanticSearch(word, currentQuote);
-      debugLog("Search results:", results);
+function QuoteList() {
+  const { currentQuotes, handleWordClick } = useQuoteManager();
+  const container = useRef<HTMLDivElement>(null);
 
-      if (results && results.length > 0) {
-        // Find the first quote that hasn't been seen yet
-        const unseenQuote = results.find((quote) => !seenQuotes.has(quote.id));
+  const { scrollYProgress } = useScroll({
+    target: container,
+    offset: ["start start", "end end"],
+  });
 
-        if (unseenQuote) {
-          displayQuote(unseenQuote);
-        } else {
-          // If all results have been seen, just pick the first one
-          displayQuote(results[0]);
-        }
-      }
-    } catch (err) {
-      console.error("Search error:", err);
-      setError("Failed to search for quotes");
-    } finally {
-      setLoading(false);
-    }
-  };
+  return (
+    <Box
+      component="main"
+      ref={container}
+      sx={{
+        flex: 1,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      {currentQuotes.map((quote, i) => {
+        const targetScale =
+          currentQuotes.length > 1 ? 1 - (currentQuotes.length - i) * 0.05 : 1;
+
+        return (
+          <Card
+            key={`quote_${i}`}
+            q={quote}
+            onWordClick={handleWordClick}
+            color={quote.color || ""}
+            i={i}
+            progress={scrollYProgress}
+            range={[i * 0.25, 1]}
+            targetScale={targetScale}
+          />
+        );
+      })}
+    </Box>
+  );
+}
+
+export default function Home() {
+  const { loading, error } = useQuoteManager();
 
   if (loading) {
     return (
       <Box
-        sx={{
-          minHeight: "100vh",
-          display: "flex",
-          flexDirection: "column",
-        }}
+        sx={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
       >
         <Header />
         <Box
@@ -105,11 +94,7 @@ export default function Home() {
   if (error) {
     return (
       <Box
-        sx={{
-          minHeight: "100vh",
-          display: "flex",
-          flexDirection: "column",
-        }}
+        sx={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
       >
         <Header />
         <Box
@@ -132,29 +117,11 @@ export default function Home() {
   }
 
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
+    <Box sx={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
       <Header />
-      <Box
-        component="main"
-        sx={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        {currentQuote && (
-          <Quote quote={currentQuote} onWordClick={handleWordClick} />
-        )}
-        <Author quote={currentQuote} />
-      </Box>
+      <ClientOnly>
+        <QuoteList />
+      </ClientOnly>
       <Footer />
     </Box>
   );
