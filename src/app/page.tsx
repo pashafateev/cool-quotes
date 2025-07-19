@@ -5,7 +5,6 @@ import Footer from "@/components/Footer";
 import { Box, CircularProgress, Typography } from "@mui/material";
 import Card from "@/components/Card";
 import { useQuoteManager } from "@/hooks/useQuoteManager";
-import { getColorByHash } from "@/utils/colorUtils";
 import { useRef, useEffect, useState } from "react";
 import { useScroll } from "framer-motion";
 
@@ -46,14 +45,15 @@ function QuoteList() {
       }}
     >
       {currentQuotes.map((quote, i) => {
-        const targetScale = 1 - (currentQuotes.length - i) * 0.05;
+        const targetScale =
+          currentQuotes.length > 1 ? 1 - (currentQuotes.length - i) * 0.05 : 1;
 
         return (
           <Card
             key={`quote_${i}`}
             q={quote}
             onWordClick={handleWordClick}
-            color={getColorByHash(quote.id)}
+            color={quote.color || ""}
             i={i}
             progress={scrollYProgress}
             range={[i * 0.25, 1]}
@@ -66,7 +66,7 @@ function QuoteList() {
 }
 
 export default function Home() {
-  const { currentQuotes, loading, error, handleWordClick } = useQuoteManager();
+  const { loading, error } = useQuoteManager();
 
   if (loading) {
     return (

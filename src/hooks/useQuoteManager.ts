@@ -1,18 +1,29 @@
 import { useState, useEffect, useRef } from "react";
-import { Quote as QuoteType, getRandomQuote, searchQuotes } from "@/utils/searchUtils";
+import { Quote, getRandomQuote, searchQuotes } from "@/utils/searchUtils";
+import { getRandomColor, getRandomColorAvoiding } from "@/utils/colorUtils";
 import { debugLog } from "@/utils/debug";
 
 export function useQuoteManager() {
-    const [currentQuotes, setCurrentQuotes] = useState<QuoteType[]>([]);
+    const [currentQuotes, setCurrentQuotes] = useState<Quote[]>([]);
     const [currentQuoteIndex, setCurrentQuoteIndex] = useState<number>(-1);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [seenQuotes, setSeenQuotes] = useState<Set<string>>(new Set());
     const hasInitialized = useRef(false);
 
-    const addQuote = (quote: QuoteType) => {
+    const addQuote = (quote: Quote) => {
         debugLog("Adding quote:", quote.id, "Current quotes count:", currentQuotes.length);
-        setCurrentQuotes((prev) => [...prev, quote]);
+
+        // Get the last quote's color to avoid consecutive duplicates
+        const lastColor = currentQuotes.length > 0 ? currentQuotes[currentQuotes.length - 1].color : undefined;
+        const color = getRandomColorAvoiding(lastColor);
+
+        const quoteWithColor: Quote = {
+            ...quote,
+            color
+        };
+
+        setCurrentQuotes((prev) => [...prev, quoteWithColor]);
         setCurrentQuoteIndex((prev) => prev + 1);
         setSeenQuotes((prev) => new Set(prev).add(quote.id));
     };
