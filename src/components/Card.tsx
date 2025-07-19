@@ -3,14 +3,19 @@ import { Box } from "@mui/material";
 import { Quote as QuoteType } from "@/utils/searchUtils";
 import Quote from "@/components/Quote";
 import Author from "@/components/Author";
-import { useTransform, motion } from "framer-motion";
+import {
+  useTransform,
+  motion,
+  MotionValue,
+  useMotionValue,
+} from "framer-motion";
 
 interface CardProps {
   q: QuoteType;
   onWordClick: (word: string) => void;
   color: string;
   i: number;
-  progress: any; // scrollYProgress from framer-motion
+  progress: MotionValue<number> | null; // scrollYProgress from framer-motion
   range: [number, number];
   targetScale: number;
 }
@@ -24,8 +29,12 @@ const Card = ({
   range,
   targetScale,
 }: CardProps) => {
-  // Only apply transform if progress is available (client-side)
-  const scale = progress ? useTransform(progress, range, [1, targetScale]) : 1;
+  // Create a fallback motion value when progress is null
+  const fallbackProgress = useMotionValue(0);
+  const actualProgress = progress || fallbackProgress;
+
+  // Always call useTransform to follow Rules of Hooks
+  const scale = useTransform(actualProgress, range, [1, targetScale]);
 
   return (
     <Box

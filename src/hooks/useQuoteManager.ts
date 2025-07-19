@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Quote, getRandomQuote, searchQuotes } from "@/utils/searchUtils";
-import { getRandomColor, getRandomColorAvoiding } from "@/utils/colorUtils";
+import { getRandomColorAvoiding } from "@/utils/colorUtils";
 import { debugLog } from "@/utils/debug";
 
 export function useQuoteManager() {
