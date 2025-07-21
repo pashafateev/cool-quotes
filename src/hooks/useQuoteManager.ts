@@ -30,6 +30,22 @@ export function useQuoteManager() {
 
     const currentQuote = currentQuoteIndex >= 0 ? currentQuotes[currentQuoteIndex] : null;
 
+    // Navigation methods
+    const canGoBack = currentQuoteIndex > 0;
+    const canGoForward = currentQuoteIndex < currentQuotes.length - 1;
+
+    const goBack = () => {
+        if (canGoBack) {
+            setCurrentQuoteIndex((prev) => prev - 1);
+        }
+    };
+
+    const goForward = () => {
+        if (canGoForward) {
+            setCurrentQuoteIndex((prev) => prev + 1);
+        }
+    };
+
     const loadRandomQuote = async () => {
         try {
             debugLog("loadRandomQuote called");
@@ -61,11 +77,18 @@ export function useQuoteManager() {
 
             if (results && results.length > 0) {
                 const unseenQuote = results.find((quote) => !seenQuotes.has(quote.id));
-                if (unseenQuote) {
-                    addQuote(unseenQuote);
-                } else {
-                    addQuote(results[0]);
+                const quoteToAdd = unseenQuote || results[0];
+
+                // Check if we're not at the latest quote (i.e., there's forward history)
+                const isAtLatestQuote = currentQuoteIndex === currentQuotes.length - 1;
+
+                if (!isAtLatestQuote) {
+                    // Clear forward history by keeping only quotes up to current index
+                    setCurrentQuotes((prev) => prev.slice(0, currentQuoteIndex + 1));
+                    debugLog("Cleared forward history, keeping quotes up to index:", currentQuoteIndex);
                 }
+
+                addQuote(quoteToAdd);
             }
         } catch (err) {
             console.error("Search error:", err);
@@ -89,5 +112,9 @@ export function useQuoteManager() {
         loading,
         error,
         handleWordClick,
+        canGoBack,
+        canGoForward,
+        goBack,
+        goForward,
     };
 }

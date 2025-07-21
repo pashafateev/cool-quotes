@@ -3,65 +3,74 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Box, CircularProgress, Typography } from "@mui/material";
-import Card from "@/components/Card";
 import { useQuoteManager } from "@/hooks/useQuoteManager";
-import { useRef, useEffect, useState } from "react";
-import { useScroll } from "framer-motion";
+import { useEffect } from "react";
+import Quote from "@/components/Quote";
+import Author from "@/components/Author";
+import NavigationArrow from "@/components/NavigationArrow";
 
-// Client-only wrapper component
-function ClientOnly({ children }: { children: React.ReactNode }) {
-  const [hasMounted, setHasMounted] = useState(false);
+function QuoteDisplay() {
+  const {
+    currentQuote,
+    handleWordClick,
+    canGoBack,
+    canGoForward,
+    goBack,
+    goForward,
+  } = useQuoteManager();
 
+  // Add keyboard navigation
   useEffect(() => {
-    setHasMounted(true);
-  }, []);
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "ArrowLeft" && canGoBack) {
+        goBack();
+      } else if (event.key === "ArrowRight" && canGoForward) {
+        goForward();
+      }
+    };
 
-  if (!hasMounted) {
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [canGoBack, canGoForward, goBack, goForward]);
+
+  if (!currentQuote) {
     return null;
   }
 
-  return <>{children}</>;
-}
-
-function QuoteList() {
-  const { currentQuotes, handleWordClick } = useQuoteManager();
-  const container = useRef<HTMLDivElement>(null);
-
-  const { scrollYProgress } = useScroll({
-    target: container,
-    offset: ["start start", "end end"],
-  });
-
   return (
-    <Box
-      component="main"
-      ref={container}
-      sx={{
-        flex: 1,
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      {currentQuotes.map((quote, i) => {
-        const targetScale =
-          currentQuotes.length > 1 ? 1 - (currentQuotes.length - i) * 0.05 : 1;
-
-        return (
-          <Card
-            key={`quote_${i}`}
-            q={quote}
-            onWordClick={handleWordClick}
-            color={quote.color || ""}
-            i={i}
-            progress={scrollYProgress}
-            range={[i * 0.25, 1]}
-            targetScale={targetScale}
-          />
-        );
-      })}
-    </Box>
+    <>
+      <NavigationArrow
+        direction="left"
+        onClick={goBack}
+        disabled={!canGoBack}
+      />
+      <NavigationArrow
+        direction="right"
+        onClick={goForward}
+        disabled={!canGoForward}
+      />
+      <Box
+        component="main"
+        sx={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <Quote quote={currentQuote} onWordClick={handleWordClick} />
+          <Author quote={currentQuote} />
+        </Box>
+      </Box>
+    </>
   );
 }
 
@@ -119,9 +128,7 @@ export default function Home() {
   return (
     <Box sx={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
       <Header />
-      <ClientOnly>
-        <QuoteList />
-      </ClientOnly>
+      <QuoteDisplay />
       <Footer />
     </Box>
   );
