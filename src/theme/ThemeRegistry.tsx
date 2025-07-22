@@ -6,10 +6,6 @@ import {
   createTheme,
 } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
-import { CacheProvider } from "@emotion/react";
-import createCache from "@emotion/cache";
-
-const clientSideEmotionCache = createCache({ key: "css", prepend: true });
 
 // Create light theme
 const lightTheme = createTheme({
@@ -227,25 +223,22 @@ export default function ThemeRegistry({
     [mode, isDark]
   );
 
+  // Always render with light theme initially to prevent hydration mismatch
   if (!mounted) {
     return (
-      <CacheProvider value={clientSideEmotionCache}>
-        <MuiThemeProvider theme={lightTheme}>
-          <CssBaseline />
-          {children}
-        </MuiThemeProvider>
-      </CacheProvider>
+      <MuiThemeProvider theme={lightTheme}>
+        <CssBaseline />
+        {children}
+      </MuiThemeProvider>
     );
   }
 
   return (
-    <CacheProvider value={clientSideEmotionCache}>
-      <ThemeContext.Provider value={contextValue}>
-        <MuiThemeProvider theme={theme}>
-          <CssBaseline />
-          {children}
-        </MuiThemeProvider>
-      </ThemeContext.Provider>
-    </CacheProvider>
+    <ThemeContext.Provider value={contextValue}>
+      <MuiThemeProvider theme={theme}>
+        <CssBaseline />
+        {children}
+      </MuiThemeProvider>
+    </ThemeContext.Provider>
   );
 }
