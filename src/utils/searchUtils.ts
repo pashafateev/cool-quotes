@@ -9,7 +9,6 @@ export interface Quote {
     createdAt: string;
     updatedAt: string;
     publishedAt: string;
-    color?: string; // Optional color property for UI styling
 }
 
 export async function searchQuotes(query: string, sourceQuote: Quote): Promise<Quote[]> {
