@@ -74,11 +74,20 @@ export function useQuoteManager() {
 
                 if (!isAtLatestQuote) {
                     // Clear forward history by keeping only quotes up to current index
-                    setCurrentQuotes((prev) => prev.slice(0, currentQuoteIndex + 1));
+                    const updatedQuotes = currentQuotes.slice(0, currentQuoteIndex + 1);
+                    setCurrentQuotes(updatedQuotes);
                     debugLog("Cleared forward history, keeping quotes up to index:", currentQuoteIndex);
-                }
 
-                addQuote(quoteToAdd);
+                    // Check against the updated array
+                    if (!updatedQuotes.some(quote => quote.id === quoteToAdd.id)) {
+                        addQuote(quoteToAdd);
+                    }
+                } else {
+                    // Check against current array
+                    if (!currentQuotes.some(quote => quote.id === quoteToAdd.id)) {
+                        addQuote(quoteToAdd);
+                    }
+                }
             }
         } catch (err) {
             console.error("Search error:", err);
