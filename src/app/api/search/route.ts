@@ -49,18 +49,14 @@ export async function POST(request: NextRequest) {
 
         const direct: SearchResult = await directRes.json();
 
-        // 2. Extract tags, authors, and references from the source quote
+        // 2. Extract tags from the source quote
         const tags = sourceQuote.tags || [];
-        const authors = sourceQuote.authors || [];
-        const references = sourceQuote.references || [];
 
         // 3. Build filter for expanded search (exclude direct matches)
         const directIds = direct.hits.map(hit => hit.id);
         const filterParts = [];
 
-            if (tags.length) filterParts.push(`tags IN [${tags.map((t: string) => `"${t}"`).join(',')}]`);
-    if (authors.length) filterParts.push(`authors IN [${authors.map((a: string) => `"${a}"`).join(',')}]`);
-    if (references.length) filterParts.push(`references IN [${references.map((r: string) => `"${r}"`).join(',')}]`);
+        if (tags.length) filterParts.push(`tags IN [${tags.map((t: string) => `"${t}"`).join(',')}]`);
 
         // If no expansion criteria, return direct results
         if (filterParts.length === 0) {
@@ -70,6 +66,7 @@ export async function POST(request: NextRequest) {
         const filter = filterParts.join(' OR ');
 
         // 4. Expanded search (exclude direct matches)
+
         const expandedRes = await fetch(`${MEILI_URL}/indexes/quotes/search`, {
             method: 'POST',
             headers: {
@@ -79,6 +76,7 @@ export async function POST(request: NextRequest) {
             body: JSON.stringify({
                 q: '',
                 filter,
+                attributesToSearchOn: ['tags'],
                 limit: 200 // Get more expanded results
             }),
         });
