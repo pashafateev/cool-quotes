@@ -2,12 +2,13 @@
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { Box, CircularProgress, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Typography } from "@mui/material";
 import { useQuoteManager } from "@/hooks/useQuoteManager";
 import { useEffect } from "react";
 import Quote from "@/components/Quote";
 import Author from "@/components/Author";
 import NavigationArrow from "@/components/NavigationArrow";
+import { FormatQuote, RestartAlt } from "@mui/icons-material";
 
 function QuoteDisplay() {
   const {
@@ -68,6 +69,43 @@ function QuoteDisplay() {
         >
           <Quote quote={currentQuote} onWordClick={handleWordClick} />
           <Author quote={currentQuote} />
+        </Box>
+        <Box
+          sx={{
+            display: "flex",
+            gap: 2,
+            marginTop: 4,
+          }}
+        >
+          <Button
+            variant="contained"
+            color="success"
+            startIcon={<RestartAlt />}
+            sx={{
+              "&:hover": {
+                backgroundColor: "#A8E889", // Darker green on hover
+                transform: "translateY(-2px)", // Lift effect
+                boxShadow: "0 4px 12px rgba(168, 232, 137, 0.4)", // Glowing shadow
+              },
+              transition: "all 0.2s ease-in-out", // Smooth transition
+            }}
+          >
+            Start Over
+          </Button>
+          <Button
+            variant="contained"
+            startIcon={<FormatQuote />}
+            sx={{
+              "&:hover": {
+                backgroundColor: "#1C1E1F", // Darker on hover for primary button
+                transform: "translateY(-2px)", // Lift effect
+                boxShadow: "0 4px 12px rgba(28, 30, 31, 0.4)", // Glowing shadow
+              },
+              transition: "all 0.2s ease-in-out", // Smooth transition
+            }}
+          >
+            Contribute
+          </Button>
         </Box>
       </Box>
     </>
