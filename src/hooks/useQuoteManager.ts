@@ -97,6 +97,33 @@ export function useQuoteManager() {
         }
     };
 
+    const startOver = async () => {
+        try {
+            debugLog("Starting over - resetting all state");
+            setLoading(true);
+            setError(null);
+
+            // Reset all state
+            setCurrentQuotes([]);
+            setCurrentQuoteIndex(-1);
+            setSeenQuotes(new Set());
+
+            // Load a new random quote
+            const quote = await getRandomQuote();
+            debugLog("Got new quote for start over:", quote);
+            if (quote) {
+                addQuote(quote);
+            } else {
+                setError("No quotes found");
+            }
+        } catch (err) {
+            setError("Failed to start over");
+            console.error("Error starting over:", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
         if (!hasInitialized.current) {
             debugLog("useEffect running - loading random quote");
@@ -115,5 +142,6 @@ export function useQuoteManager() {
         canGoForward,
         goBack,
         goForward,
+        startOver,
     };
 }

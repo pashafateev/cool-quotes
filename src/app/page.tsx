@@ -18,6 +18,7 @@ function QuoteDisplay() {
     canGoForward,
     goBack,
     goForward,
+    startOver,
   } = useQuoteManager();
 
   // Add keyboard navigation
@@ -81,6 +82,7 @@ function QuoteDisplay() {
             variant="contained"
             color="success"
             startIcon={<RestartAlt />}
+            onClick={startOver}
             sx={{
               "&:hover": {
                 backgroundColor: "#A8E889", // Darker green on hover
