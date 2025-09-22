@@ -2,13 +2,13 @@
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { Box, Button, CircularProgress, Typography } from "@mui/material";
+import { Box, CircularProgress, Typography } from "@mui/material";
 import { useQuoteManager } from "@/hooks/useQuoteManager";
 import { useEffect } from "react";
 import Quote from "@/components/Quote";
 import Author from "@/components/Author";
 import NavigationArrow from "@/components/NavigationArrow";
-import { FormatQuote, RestartAlt } from "@mui/icons-material";
+import ActionButtons from "@/components/ActionButtons";
 
 function QuoteDisplay() {
   const {
@@ -71,50 +71,7 @@ function QuoteDisplay() {
           <Quote quote={currentQuote} onWordClick={handleWordClick} />
           <Author quote={currentQuote} />
         </Box>
-        <Box
-          sx={{
-            display: "flex",
-            gap: 2,
-            marginTop: 4,
-          }}
-        >
-          <Button
-            variant="contained"
-            color="success"
-            startIcon={<RestartAlt />}
-            onClick={startOver}
-            sx={{
-              "&:hover": {
-                backgroundColor: "#A8E889", // Darker green on hover
-                transform: "translateY(-2px)", // Lift effect
-                boxShadow: "0 4px 12px rgba(168, 232, 137, 0.4)", // Glowing shadow
-              },
-              transition: "all 0.2s ease-in-out", // Smooth transition
-            }}
-          >
-            Start Over
-          </Button>
-          <Button
-            variant="contained"
-            startIcon={<FormatQuote />}
-            onClick={() =>
-              window.open(
-                "https://docs.google.com/forms/d/e/1FAIpQLSdrjwZVG1aCAqEU4mJwtqaEsjMB0yYu3c7QUVZHhsnD5FF-_w/viewform?vc=0&c=0&w=1&flr=0",
-                "_blank"
-              )
-            }
-            sx={{
-              "&:hover": {
-                backgroundColor: "#1C1E1F", // Darker on hover for primary button
-                transform: "translateY(-2px)", // Lift effect
-                boxShadow: "0 4px 12px rgba(28, 30, 31, 0.4)", // Glowing shadow
-              },
-              transition: "all 0.2s ease-in-out", // Smooth transition
-            }}
-          >
-            Contribute
-          </Button>
-        </Box>
+        <ActionButtons onStartOver={startOver} />
       </Box>
     </>
   );
