@@ -94,10 +94,15 @@ function QuoteDisplay() {
           >
             Start Over
           </Button>
-          <Button 
-            variant="contained" 
+          <Button
+            variant="contained"
             startIcon={<FormatQuote />}
-            onClick={() => window.open('https://docs.google.com/forms/d/e/1FAIpQLSdrjwZVG1aCAqEU4mJwtqaEsjMB0yYu3c7QUVZHhsnD5FF-_w/viewform?vc=0&c=0&w=1&flr=0', '_blank')}
+            onClick={() =>
+              window.open(
+                "https://docs.google.com/forms/d/e/1FAIpQLSdrjwZVG1aCAqEU4mJwtqaEsjMB0yYu3c7QUVZHhsnD5FF-_w/viewform?vc=0&c=0&w=1&flr=0",
+                "_blank"
+              )
+            }
             sx={{
               "&:hover": {
                 backgroundColor: "#1C1E1F", // Darker on hover for primary button
