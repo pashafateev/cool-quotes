@@ -62,7 +62,7 @@ export function useQuoteManager() {
         try {
             setLoading(true);
             debugLog("Searching for:", word);
-            const results = await searchQuotes(word, currentQuote);
+            const results = await searchQuotes(word);
             debugLog("Search results:", results);
 
             if (results && results.length > 0) {
