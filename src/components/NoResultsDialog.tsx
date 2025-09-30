@@ -5,7 +5,6 @@ import {
   DialogActions,
   Button,
   Typography,
-  Box,
 } from "@mui/material";
 import { RestartAlt, FormatQuote } from "@mui/icons-material";
 
