@@ -8,7 +8,6 @@ import { useEffect } from "react";
 import Quote from "@/components/Quote";
 import Author from "@/components/Author";
 import NavigationArrow from "@/components/NavigationArrow";
-import ActionButtons from "@/components/ActionButtons";
 
 function QuoteDisplay() {
   const {
@@ -28,12 +27,15 @@ function QuoteDisplay() {
         goBack();
       } else if (event.key === "ArrowRight" && canGoForward) {
         goForward();
+      } else if (event.key === "r" || event.key === "R") {
+        // R key for "restart" or "reset"
+        startOver();
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [canGoBack, canGoForward, goBack, goForward]);
+  }, [canGoBack, canGoForward, goBack, goForward, startOver]);
 
   if (!currentQuote) {
     return null;
@@ -71,7 +73,6 @@ function QuoteDisplay() {
           <Quote quote={currentQuote} onWordClick={handleWordClick} />
           <Author quote={currentQuote} />
         </Box>
-        <ActionButtons onStartOver={startOver} />
       </Box>
     </>
   );
