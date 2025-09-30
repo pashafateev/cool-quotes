@@ -8,6 +8,7 @@ export function useQuoteManager() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [seenQuotes, setSeenQuotes] = useState<Set<string>>(new Set());
+    const [noResultsDialog, setNoResultsDialog] = useState<{ open: boolean, searchTerm: string }>({ open: false, searchTerm: '' });
     const hasInitialized = useRef(false);
 
     const addQuote = (quote: Quote) => {
@@ -67,27 +68,37 @@ export function useQuoteManager() {
 
             if (results && results.length > 0) {
                 const unseenQuote = results.find((quote) => !seenQuotes.has(quote.id));
-                const quoteToAdd = unseenQuote || results[0];
 
-                // Check if we're not at the latest quote (i.e., there's forward history)
-                const isAtLatestQuote = currentQuoteIndex === currentQuotes.length - 1;
+                if (unseenQuote) {
+                    // There's an unseen quote, add it
+                    const quoteToAdd = unseenQuote;
 
-                if (!isAtLatestQuote) {
-                    // Clear forward history by keeping only quotes up to current index
-                    const updatedQuotes = currentQuotes.slice(0, currentQuoteIndex + 1);
-                    setCurrentQuotes(updatedQuotes);
-                    debugLog("Cleared forward history, keeping quotes up to index:", currentQuoteIndex);
+                    // Check if we're not at the latest quote (i.e., there's forward history)
+                    const isAtLatestQuote = currentQuoteIndex === currentQuotes.length - 1;
 
-                    // Check against the updated array
-                    if (!updatedQuotes.some(quote => quote.id === quoteToAdd.id)) {
-                        addQuote(quoteToAdd);
+                    if (!isAtLatestQuote) {
+                        // Clear forward history by keeping only quotes up to current index
+                        const updatedQuotes = currentQuotes.slice(0, currentQuoteIndex + 1);
+                        setCurrentQuotes(updatedQuotes);
+                        debugLog("Cleared forward history, keeping quotes up to index:", currentQuoteIndex);
+
+                        // Check against the updated array
+                        if (!updatedQuotes.some(quote => quote.id === quoteToAdd.id)) {
+                            addQuote(quoteToAdd);
+                        }
+                    } else {
+                        // Check against current array
+                        if (!currentQuotes.some(quote => quote.id === quoteToAdd.id)) {
+                            addQuote(quoteToAdd);
+                        }
                     }
                 } else {
-                    // Check against current array
-                    if (!currentQuotes.some(quote => quote.id === quoteToAdd.id)) {
-                        addQuote(quoteToAdd);
-                    }
+                    // All results have been seen before, show dialog
+                    setNoResultsDialog({ open: true, searchTerm: word });
                 }
+            } else {
+                // No results found at all, show dialog
+                setNoResultsDialog({ open: true, searchTerm: word });
             }
         } catch (err) {
             console.error("Search error:", err);
@@ -124,6 +135,17 @@ export function useQuoteManager() {
         }
     };
 
+    const closeNoResultsDialog = () => {
+        setNoResultsDialog({ open: false, searchTerm: '' });
+    };
+
+    const handleContribute = () => {
+        window.open(
+            "https://docs.google.com/forms/d/e/1FAIpQLSdrjwZVG1aCAqEU4mJwtqaEsjMB0yYu3c7QUVZHhsnD5FF-_w/viewform?vc=0&c=0&w=1&flr=0",
+            "_blank"
+        );
+    };
+
     useEffect(() => {
         if (!hasInitialized.current) {
             debugLog("useEffect running - loading random quote");
@@ -143,5 +165,8 @@ export function useQuoteManager() {
         goBack,
         goForward,
         startOver,
+        noResultsDialog,
+        closeNoResultsDialog,
+        handleContribute,
     };
 }
