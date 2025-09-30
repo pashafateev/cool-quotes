@@ -5,6 +5,7 @@ import {
   DialogActions,
   Button,
   Typography,
+  Box,
 } from "@mui/material";
 import { RestartAlt, FormatQuote } from "@mui/icons-material";
 
@@ -58,7 +59,11 @@ export default function NoResultsDialog({
             fontSize: { xs: "1.25rem", sm: "1.5rem" },
           }}
         >
-          No quotes found for &ldquo;{searchTerm}&rdquo;
+          No quotes found for &ldquo;
+          <Box component="span" sx={{ fontStyle: "italic" }}>
+            {searchTerm}
+          </Box>
+          &rdquo;
         </Typography>
       </DialogTitle>
       <DialogContent>
@@ -72,8 +77,7 @@ export default function NoResultsDialog({
             lineHeight: 1.5,
           }}
         >
-          We couldn&apos;t find any quotes related to &ldquo;{searchTerm}
-          &rdquo;. Would you like to explore a fresh quote, or help us grow our
+          Would you like to explore a fresh quote, or help us grow our
           collection by sharing your own wisdom?
         </Typography>
       </DialogContent>
