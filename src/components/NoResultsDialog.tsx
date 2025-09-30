@@ -105,6 +105,10 @@ export default function NoResultsDialog({
             fontFamily: "'Plantagenet-Regular', Helvetica",
             fontSize: { xs: "0.875rem", sm: "1rem" },
             "&:hover": {
+              backgroundColor: (theme) =>
+                theme.palette.mode === "dark"
+                  ? "rgba(255, 255, 255, 0.6)"
+                  : "rgba(0, 0, 0, 0.6)",
               transform: "translateY(-2px)",
               boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
             },
