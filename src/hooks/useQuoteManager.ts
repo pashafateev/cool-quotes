@@ -152,7 +152,7 @@ export function useQuoteManager() {
             hasInitialized.current = true;
             loadRandomQuote();
         }
-    }, []);
+    }, [loadRandomQuote]);
 
     return {
         currentQuotes,

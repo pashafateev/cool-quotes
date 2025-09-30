@@ -58,7 +58,7 @@ export default function NoResultsDialog({
             fontSize: { xs: "1.25rem", sm: "1.5rem" },
           }}
         >
-          No quotes found for "{searchTerm}"
+          No quotes found for &ldquo;{searchTerm}&rdquo;
         </Typography>
       </DialogTitle>
       <DialogContent>
@@ -72,9 +72,9 @@ export default function NoResultsDialog({
             lineHeight: 1.5,
           }}
         >
-          We couldn't find any quotes related to "{searchTerm}". Would you like
-          to explore a fresh quote, or help us grow our collection by sharing
-          your own wisdom?
+          We couldn&apos;t find any quotes related to &ldquo;{searchTerm}
+          &rdquo;. Would you like to explore a fresh quote, or help us grow our
+          collection by sharing your own wisdom?
         </Typography>
       </DialogContent>
       <DialogActions sx={{ justifyContent: "center", gap: 2, pb: 2 }}>
