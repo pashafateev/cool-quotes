@@ -6,8 +6,9 @@ import {
   Button,
   Typography,
   Box,
+  IconButton,
 } from "@mui/material";
-import { RestartAlt, FormatQuote } from "@mui/icons-material";
+import { RestartAlt, FormatQuote, Close } from "@mui/icons-material";
 
 interface NoResultsDialogProps {
   open: boolean;
@@ -50,21 +51,36 @@ export default function NoResultsDialog({
       }}
     >
       <DialogTitle>
-        <Typography
-          variant="h6"
-          component="div"
-          textAlign="center"
-          sx={{
-            fontFamily: "'Plantagenet-Regular', Helvetica",
-            fontSize: { xs: "1.25rem", sm: "1.5rem" },
-          }}
-        >
-          No quotes found for &ldquo;
-          <Box component="span" sx={{ fontStyle: "italic" }}>
-            {searchTerm}
-          </Box>
-          &rdquo;
-        </Typography>
+        <Box sx={{ position: "relative" }}>
+          <IconButton
+            aria-label="close"
+            onClick={onClose}
+            sx={{
+              position: "absolute",
+              right: -8,
+              top: -8,
+              color: (theme) => theme.palette.grey[500],
+            }}
+          >
+            <Close />
+          </IconButton>
+          <Typography
+            variant="h6"
+            component="div"
+            textAlign="center"
+            sx={{
+              fontFamily: "'Plantagenet-Regular', Helvetica",
+              fontSize: { xs: "1.25rem", sm: "1.5rem" },
+              pr: 4, // Add padding to avoid overlap with close button
+            }}
+          >
+            No quotes found for &ldquo;
+            <Box component="span" sx={{ fontStyle: "italic" }}>
+              {searchTerm}
+            </Box>
+            &rdquo;
+          </Typography>
+        </Box>
       </DialogTitle>
       <DialogContent>
         <Typography
@@ -98,7 +114,7 @@ export default function NoResultsDialog({
             transition: "all 0.2s ease-in-out",
           }}
         >
-          Join a new thread
+          Refresh
         </Button>
         <Button
           variant="contained"
