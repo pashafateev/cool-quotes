@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import Quote from "@/components/Quote";
 import Author from "@/components/Author";
 import NavigationArrow from "@/components/NavigationArrow";
+import NoResultsDialog from "@/components/NoResultsDialog";
 
 function QuoteDisplay() {
   const {
@@ -17,6 +18,10 @@ function QuoteDisplay() {
     canGoForward,
     goBack,
     goForward,
+    startOver,
+    noResultsDialog,
+    closeNoResultsDialog,
+    handleContribute,
   } = useQuoteManager();
 
   // Add keyboard navigation
@@ -70,6 +75,13 @@ function QuoteDisplay() {
           <Author quote={currentQuote} />
         </Box>
       </Box>
+      <NoResultsDialog
+        open={noResultsDialog.open}
+        onClose={closeNoResultsDialog}
+        onStartOver={startOver}
+        onContribute={handleContribute}
+        searchTerm={noResultsDialog.searchTerm}
+      />
     </>
   );
 }

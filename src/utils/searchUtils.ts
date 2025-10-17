@@ -11,14 +11,14 @@ export interface Quote {
     publishedAt: string;
 }
 
-export async function searchQuotes(query: string, sourceQuote: Quote): Promise<Quote[]> {
+export async function searchQuotes(query: string): Promise<Quote[]> {
     try {
         const res = await fetch('/api/search', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ query, sourceQuote }),
+            body: JSON.stringify({ query }),
         });
 
         if (!res.ok) {

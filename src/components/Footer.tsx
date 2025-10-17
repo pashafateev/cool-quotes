@@ -69,7 +69,27 @@ const Footer = () => {
             textAlign: { xs: "center", sm: "center" },
           }}
         >
-          © 2025 The Proctor Charlie Collective.
+          © 2025{" "}
+          <Link
+            href="https://proctorcharlie.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ textDecoration: "none", color: "inherit" }}
+          >
+            <Typography
+              component="span"
+              sx={{
+                color: "secondary.main",
+                cursor: "pointer",
+                "&:hover": {
+                  textDecoration: "underline",
+                },
+              }}
+            >
+              The Proctor Charlie Collective
+            </Typography>
+          </Link>
+          .
           <br />
           Other copyrights may apply.
         </Typography>

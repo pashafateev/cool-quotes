@@ -224,12 +224,21 @@ export default function ThemeRegistry({
   );
 
   // Always render with light theme initially to prevent hydration mismatch
+  // and provide a consistent context value
   if (!mounted) {
     return (
-      <MuiThemeProvider theme={lightTheme}>
-        <CssBaseline />
-        {children}
-      </MuiThemeProvider>
+      <ThemeContext.Provider
+        value={{
+          mode: "system",
+          setMode: () => {},
+          isDark: false,
+        }}
+      >
+        <MuiThemeProvider theme={lightTheme}>
+          <CssBaseline />
+          {children}
+        </MuiThemeProvider>
+      </ThemeContext.Provider>
     );
   }
 

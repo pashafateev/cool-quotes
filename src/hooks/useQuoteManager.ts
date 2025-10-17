@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Quote, getRandomQuote, searchQuotes } from "@/utils/searchUtils";
 import { debugLog } from "@/utils/debug";
+import { GOOGLE_FORM_URL } from "@/utils/constants";
 
 export function useQuoteManager() {
     const [currentQuotes, setCurrentQuotes] = useState<Quote[]>([]);
@@ -8,15 +9,16 @@ export function useQuoteManager() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [seenQuotes, setSeenQuotes] = useState<Set<string>>(new Set());
+    const [noResultsDialog, setNoResultsDialog] = useState<{ open: boolean, searchTerm: string }>({ open: false, searchTerm: '' });
     const hasInitialized = useRef(false);
 
-    const addQuote = (quote: Quote) => {
-        debugLog("Adding quote:", quote.id, "Current quotes count:", currentQuotes.length);
+    const addQuote = useCallback((quote: Quote) => {
+        debugLog("Adding quote:", quote.id);
 
         setCurrentQuotes((prev) => [...prev, quote]);
         setCurrentQuoteIndex((prev) => prev + 1);
         setSeenQuotes((prev) => new Set(prev).add(quote.id));
-    };
+    }, []);
 
     const currentQuote = currentQuoteIndex >= 0 ? currentQuotes[currentQuoteIndex] : null;
 
@@ -36,7 +38,7 @@ export function useQuoteManager() {
         }
     };
 
-    const loadRandomQuote = async () => {
+    const loadRandomQuote = useCallback(async () => {
         try {
             debugLog("loadRandomQuote called");
             setLoading(true);
@@ -54,7 +56,7 @@ export function useQuoteManager() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [addQuote]);
 
     const handleWordClick = async (word: string) => {
         if (!currentQuote) return;
@@ -62,23 +64,42 @@ export function useQuoteManager() {
         try {
             setLoading(true);
             debugLog("Searching for:", word);
-            const results = await searchQuotes(word, currentQuote);
+            const results = await searchQuotes(word);
             debugLog("Search results:", results);
 
             if (results && results.length > 0) {
                 const unseenQuote = results.find((quote) => !seenQuotes.has(quote.id));
-                const quoteToAdd = unseenQuote || results[0];
 
-                // Check if we're not at the latest quote (i.e., there's forward history)
-                const isAtLatestQuote = currentQuoteIndex === currentQuotes.length - 1;
+                if (unseenQuote) {
+                    // There's an unseen quote, add it
+                    const quoteToAdd = unseenQuote;
 
-                if (!isAtLatestQuote) {
-                    // Clear forward history by keeping only quotes up to current index
-                    setCurrentQuotes((prev) => prev.slice(0, currentQuoteIndex + 1));
-                    debugLog("Cleared forward history, keeping quotes up to index:", currentQuoteIndex);
+                    // Check if we're not at the latest quote (i.e., there's forward history)
+                    const isAtLatestQuote = currentQuoteIndex === currentQuotes.length - 1;
+
+                    if (!isAtLatestQuote) {
+                        // Clear forward history by keeping only quotes up to current index
+                        const updatedQuotes = currentQuotes.slice(0, currentQuoteIndex + 1);
+                        setCurrentQuotes(updatedQuotes);
+                        debugLog("Cleared forward history, keeping quotes up to index:", currentQuoteIndex);
+
+                        // Check against the updated array
+                        if (!updatedQuotes.some(quote => quote.id === quoteToAdd.id)) {
+                            addQuote(quoteToAdd);
+                        }
+                    } else {
+                        // Check against current array
+                        if (!currentQuotes.some(quote => quote.id === quoteToAdd.id)) {
+                            addQuote(quoteToAdd);
+                        }
+                    }
+                } else {
+                    // All results have been seen before, show dialog
+                    setNoResultsDialog({ open: true, searchTerm: word });
                 }
-
-                addQuote(quoteToAdd);
+            } else {
+                // No results found at all, show dialog
+                setNoResultsDialog({ open: true, searchTerm: word });
             }
         } catch (err) {
             console.error("Search error:", err);
@@ -88,13 +109,48 @@ export function useQuoteManager() {
         }
     };
 
+    const startOver = async () => {
+        try {
+            debugLog("Starting over - resetting all state");
+            setLoading(true);
+            setError(null);
+
+            // Reset all state
+            setCurrentQuotes([]);
+            setCurrentQuoteIndex(-1);
+            setSeenQuotes(new Set());
+
+            // Load a new random quote
+            const quote = await getRandomQuote();
+            debugLog("Got new quote for start over:", quote);
+            if (quote) {
+                addQuote(quote);
+            } else {
+                setError("No quotes found");
+            }
+        } catch (err) {
+            setError("Failed to start over");
+            console.error("Error starting over:", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const closeNoResultsDialog = () => {
+        setNoResultsDialog({ open: false, searchTerm: '' });
+    };
+
+    const handleContribute = () => {
+        window.open(GOOGLE_FORM_URL, "_blank");
+    };
+
     useEffect(() => {
         if (!hasInitialized.current) {
             debugLog("useEffect running - loading random quote");
             hasInitialized.current = true;
             loadRandomQuote();
         }
-    }, []);
+    }, [loadRandomQuote]);
 
     return {
         currentQuotes,
@@ -106,5 +162,9 @@ export function useQuoteManager() {
         canGoForward,
         goBack,
         goForward,
+        startOver,
+        noResultsDialog,
+        closeNoResultsDialog,
+        handleContribute,
     };
 }
