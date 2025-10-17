@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Quote, getRandomQuote, searchQuotes } from "@/utils/searchUtils";
 import { debugLog } from "@/utils/debug";
+import { GOOGLE_FORM_URL } from "@/utils/constants";
 
 export function useQuoteManager() {
     const [currentQuotes, setCurrentQuotes] = useState<Quote[]>([]);
@@ -11,13 +12,13 @@ export function useQuoteManager() {
     const [noResultsDialog, setNoResultsDialog] = useState<{ open: boolean, searchTerm: string }>({ open: false, searchTerm: '' });
     const hasInitialized = useRef(false);
 
-    const addQuote = (quote: Quote) => {
-        debugLog("Adding quote:", quote.id, "Current quotes count:", currentQuotes.length);
+    const addQuote = useCallback((quote: Quote) => {
+        debugLog("Adding quote:", quote.id);
 
         setCurrentQuotes((prev) => [...prev, quote]);
         setCurrentQuoteIndex((prev) => prev + 1);
         setSeenQuotes((prev) => new Set(prev).add(quote.id));
-    };
+    }, []);
 
     const currentQuote = currentQuoteIndex >= 0 ? currentQuotes[currentQuoteIndex] : null;
 
@@ -37,7 +38,7 @@ export function useQuoteManager() {
         }
     };
 
-    const loadRandomQuote = async () => {
+    const loadRandomQuote = useCallback(async () => {
         try {
             debugLog("loadRandomQuote called");
             setLoading(true);
@@ -55,7 +56,7 @@ export function useQuoteManager() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [addQuote]);
 
     const handleWordClick = async (word: string) => {
         if (!currentQuote) return;
@@ -140,10 +141,7 @@ export function useQuoteManager() {
     };
 
     const handleContribute = () => {
-        window.open(
-            "https://docs.google.com/forms/d/e/1FAIpQLSdrjwZVG1aCAqEU4mJwtqaEsjMB0yYu3c7QUVZHhsnD5FF-_w/viewform?vc=0&c=0&w=1&flr=0",
-            "_blank"
-        );
+        window.open(GOOGLE_FORM_URL, "_blank");
     };
 
     useEffect(() => {
