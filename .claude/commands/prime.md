@@ -2,112 +2,81 @@
 description: Get acquainted with the Cool Quotes repository
 ---
 
-# Cool Quotes Repository Overview
+# Prime Command: Repository Onboarding
 
-This is an interactive quote discovery application built with Next.js 15. Get familiar with the codebase by understanding these key aspects:
+Get familiar with the Cool Quotes codebase by exploring the following files and understanding their purpose. This is an interactive quote discovery application built with Next.js 15.
 
-## What This App Does
+## Step 1: Understand the Project
 
-Cool Quotes is an interactive web application where users:
-- Start with a random quote
-- Click on meaningful words (colored blue) to search for related quotes
-- Navigate back/forward through their quote discovery history with arrow buttons or keyboard
-- Switch between dark/light themes
-- Receive real-time quote updates via Contentful webhooks
+**Read these files first to understand what this project does:**
 
-Common stop words are filtered out so users focus on meaningful words. If no quotes are found, users can contribute via a Google Form.
+1. `README.md` - Project overview, features, and architecture
+2. `package.json` - Tech stack, dependencies, and available scripts
 
-## Tech Stack
+**Key questions to answer:**
+- What is the core user interaction model?
+- What technologies and external services are used (search, CMS)?
+- What makes this app "interactive"?
 
-- **Framework**: Next.js 15 with App Router
-- **Language**: TypeScript
-- **UI Library**: Material-UI (MUI) v7 with Emotion styling
-- **Styling**: Tailwind CSS + MUI
-- **Search Engine**: MeiliSearch for fast, typo-tolerant search
-- **CMS**: Contentful for content management
-- **Package Manager**: npm
+## Step 2: Explore the Main Application Flow
 
-## Architecture
+**Read these files to understand how the app works:**
 
-Three-tier architecture:
-1. **Frontend**: Next.js with MUI for interactive UI
-2. **Search Layer**: MeiliSearch for full-text search
-3. **Content Layer**: Contentful CMS with webhook integration
+1. `src/app/page.tsx` - Main application entry point
+2. `src/hooks/useQuoteManager.ts` - Core state management (quote history, navigation, search)
+3. `src/components/Quote.tsx` - How quotes are displayed and made interactive
 
-## Key Files & Directories
+**Key questions to answer:**
+- How does the user navigate through quotes?
+- What happens when a user clicks on a word?
+- How is the quote history managed?
 
-### Main Application
-- `src/app/page.tsx` - Main application page with quote display logic
-- `src/app/layout.tsx` - Root layout with theme configuration
-- `src/hooks/useQuoteManager.ts` - Core state management for quotes, navigation, and search
+## Step 3: Understand the API Layer
 
-### API Routes
-- `src/app/api/quotes/route.ts` - Random quote endpoint
-- `src/app/api/search/route.ts` - Search endpoint
-- `src/app/api/webhook/contentful/route.ts` - Contentful webhook handler for real-time sync
+**Read these API routes to understand the backend:**
 
-### Components
-- `src/components/Quote.tsx` - Interactive quote display with clickable words
-- `src/components/Author.tsx` - Author display component
-- `src/components/NavigationArrow.tsx` - Back/forward navigation arrows
-- `src/components/Header.tsx` - App header with logo
-- `src/components/ThemeToggle.tsx` - Dark/light mode toggle
-- `src/components/NoResultsDialog.tsx` - Modal shown when no quotes found
+1. `src/app/api/quotes/route.ts` - How random quotes are fetched
+2. `src/app/api/search/route.ts` - How search works
+3. `src/app/api/webhook/contentful/route.ts` - Real-time content synchronization
 
-### Utilities
-- `src/utils/searchUtils.ts` - Search API utilities
-- `src/utils/stopWords.ts` - List of filtered stop words
-- `src/utils/contentfulWebhook.ts` - Webhook event processing
-- `src/theme/ThemeRegistry.tsx` - MUI theme configuration
+**Key questions to answer:**
+- Where do quotes come from?
+- How does search filtering work?
+- How are quotes kept in sync between Contentful and MeiliSearch?
 
-## How It Works
+## Step 4: Review Key Utilities
 
-### Quote Navigation Flow
-1. **Initial Load**: Fetches random quote from MeiliSearch
-2. **Word Click**:
-   - Searches for quotes containing that word
-   - Filters out already-seen quotes
-   - Adds to history stack
-   - Clears forward history if navigated back
-3. **Navigation**: Arrow buttons or keyboard arrows traverse history
-4. **No Results**: Dialog with "Start Over" or "Contribute Quote" options
+**Read these utility files to understand supporting functionality:**
 
-### Contentful Webhook Integration
-The `/api/webhook/contentful` endpoint:
-- Receives events when quotes are created/updated/deleted
-- Converts Contentful rich text to plain text
-- Syncs changes to MeiliSearch in real-time
-- Supports create, update, publish, unpublish, and delete events
+1. `src/utils/stopWords.ts` - Word filtering logic
+2. `src/utils/searchUtils.ts` - Search API utilities
+3. `src/utils/contentfulWebhook.ts` - Webhook processing
 
-### Search Implementation
-- MeiliSearch provides fast, typo-tolerant full-text search
-- Searches across: quote text, authors, references, tags
-- Returns up to 200 results per search
-- Automatically filters common stop words
+**Key questions to answer:**
+- Why are stop words filtered?
+- How does the search utility interact with MeiliSearch?
+- What events trigger webhook processing?
 
-## Development Commands
+## Step 5: Explore the Component Architecture
 
-```bash
-npm run dev    # Start dev server with Turbopack
-npm run build  # Build for production
-npm start      # Start production server
-npm run lint   # Run ESLint
-```
+**Browse the components directory to understand the UI structure:**
 
-## Recent Changes
+1. `src/components/NavigationArrow.tsx` - Back/forward navigation
+2. `src/components/NoResultsDialog.tsx` - No results handling
+3. `src/components/Header.tsx` and `src/components/ThemeToggle.tsx` - App chrome
 
-From git history:
-- Simplified search logic and improved UX for no results
-- Added arrow navigation (keyboard and UI)
-- Removed color cards and unused packages
-- Streamlined quote display
+## Architecture Summary to Validate
 
-## Important Notes
+After exploring, you should understand this three-tier architecture:
+1. **Frontend**: Next.js 15 + React 19 + MUI for interactive UI
+2. **Search Layer**: MeiliSearch for fast, typo-tolerant search
+3. **Content Layer**: Contentful CMS with real-time webhook sync
 
-- The app uses client-side state management via the `useQuoteManager` hook
-- Stop words are filtered to make word clicking more meaningful
-- MeiliSearch handles all search indexing and retrieval
-- Contentful acts as the source of truth for quote content
-- Real-time sync keeps MeiliSearch in sync with Contentful via webhooks
+## Key Concepts to Grasp
 
-You should now be familiar with the Cool Quotes codebase structure, tech stack, and core functionality.
+- **Interactive word clicking**: Users click non-stop words to search for related quotes
+- **History-based navigation**: Back/forward through quote discovery journey
+- **Real-time sync**: Contentful webhooks keep MeiliSearch index updated
+- **Smart filtering**: Stop words filtered, duplicate quotes avoided
+
+Once you've completed this exploration, you'll be ready to work on this codebase effectively.
