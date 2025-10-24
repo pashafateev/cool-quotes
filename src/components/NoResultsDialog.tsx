@@ -3,12 +3,12 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Button,
   Typography,
   Box,
   IconButton,
+  Link,
 } from "@mui/material";
-import { RestartAlt, FormatQuote, Close } from "@mui/icons-material";
+import { Close } from "@mui/icons-material";
 
 interface NoResultsDialogProps {
   open: boolean;
@@ -82,61 +82,61 @@ export default function NoResultsDialog({
           </Typography>
         </Box>
       </DialogTitle>
-      <DialogContent>
+      <DialogContent sx={{ pt: 1, pb: 3 }}>
         <Typography
           variant="body1"
           textAlign="center"
           sx={{
-            mb: 2,
             fontFamily: "'Plantagenet-Regular', Helvetica",
             fontSize: { xs: "1rem", sm: "1.125rem" },
-            lineHeight: 1.5,
+            lineHeight: 1.6,
+            color: "text.primary",
           }}
         >
-          Would you like to explore a fresh quote, or help us grow our
-          collection by sharing your own wisdom?
+          <Link
+            component="button"
+            onClick={handleStartOver}
+            underline="none"
+            sx={{
+              color: "secondary.main",
+              cursor: "pointer",
+              fontFamily: "'Plantagenet-Regular', Helvetica",
+              fontSize: "inherit",
+              fontWeight: 500,
+              transition: "all 0.2s ease-in-out",
+              display: "inline-block",
+              "&:hover": {
+                transform: "scale(1.02)",
+                textShadow: "0 0 8px rgba(61, 173, 255, 0.3)",
+              },
+            }}
+          >
+            Start a new conversation
+          </Link>
+          , or help us grow Cool Quotes by{" "}
+          <Link
+            component="button"
+            onClick={handleContribute}
+            underline="none"
+            sx={{
+              color: "secondary.main",
+              cursor: "pointer",
+              fontFamily: "'Plantagenet-Regular', Helvetica",
+              fontSize: "inherit",
+              fontWeight: 500,
+              transition: "all 0.2s ease-in-out",
+              display: "inline-block",
+              "&:hover": {
+                transform: "scale(1.02)",
+                textShadow: "0 0 8px rgba(61, 173, 255, 0.3)",
+              },
+            }}
+          >
+            sharing a quote yourself
+          </Link>
+          !
         </Typography>
       </DialogContent>
-      <DialogActions sx={{ justifyContent: "center", gap: 2, pb: 2 }}>
-        <Button
-          variant="contained"
-          color="success"
-          startIcon={<RestartAlt />}
-          onClick={handleStartOver}
-          sx={{
-            fontFamily: "'Plantagenet-Regular', Helvetica",
-            fontSize: { xs: "0.875rem", sm: "1rem" },
-            "&:hover": {
-              backgroundColor: "#A8E889",
-              transform: "translateY(-2px)",
-              boxShadow: "0 4px 12px rgba(168, 232, 137, 0.4)",
-            },
-            transition: "all 0.2s ease-in-out",
-          }}
-        >
-          Refresh
-        </Button>
-        <Button
-          variant="contained"
-          startIcon={<FormatQuote />}
-          onClick={handleContribute}
-          sx={{
-            fontFamily: "'Plantagenet-Regular', Helvetica",
-            fontSize: { xs: "0.875rem", sm: "1rem" },
-            "&:hover": {
-              backgroundColor: (theme) =>
-                theme.palette.mode === "dark"
-                  ? "rgba(255, 255, 255, 0.6)"
-                  : "rgba(0, 0, 0, 0.6)",
-              transform: "translateY(-2px)",
-              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
-            },
-            transition: "all 0.2s ease-in-out",
-          }}
-        >
-          Suggest a response
-        </Button>
-      </DialogActions>
     </Dialog>
   );
 }
