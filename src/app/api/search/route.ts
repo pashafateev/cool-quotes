@@ -40,7 +40,11 @@ export async function POST(request: NextRequest) {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${MEILI_API_KEY}`,
             },
-            body: JSON.stringify({ q: query, limit: 200 }),
+            body: JSON.stringify({
+                q: query,
+                limit: 200,
+                attributesToSearchOn: ['quote'], // restrict matches to quote text only
+            }),
         });
 
         if (!directRes.ok) {
