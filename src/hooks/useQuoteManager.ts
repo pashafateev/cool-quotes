@@ -48,7 +48,7 @@ export function useQuoteManager() {
             if (quote) {
                 addQuote(quote);
             } else {
-                setError("No quotes found");
+                setError("No more quotes found");
             }
         } catch (err) {
             setError("Failed to load quote");
@@ -126,7 +126,7 @@ export function useQuoteManager() {
             if (quote) {
                 addQuote(quote);
             } else {
-                setError("No quotes found");
+                setError("No more quotes found");
             }
         } catch (err) {
             setError("Failed to start over");

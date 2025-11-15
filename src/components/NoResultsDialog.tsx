@@ -73,7 +73,7 @@ export default function NoResultsDialog({
               pr: 4, // Add padding to avoid overlap with close button
             }}
           >
-            No quotes found for &ldquo;
+            No more quotes found for &ldquo;
             <Box component="span" sx={{ fontStyle: "italic" }}>
               {searchTerm}
             </Box>

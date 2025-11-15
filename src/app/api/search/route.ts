@@ -40,7 +40,13 @@ export async function POST(request: NextRequest) {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${MEILI_API_KEY}`,
             },
-            body: JSON.stringify({ q: query, limit: 200 }),
+            body: JSON.stringify({
+                q: query,
+                limit: 200,
+                // Query-level restriction (MeiliSearch v1.3+): Only search within the quote field
+                // This provides additional safety even if index-level searchableAttributes is configured
+                attributesToSearchOn: ['quote'],
+            }),
         });
 
         if (!directRes.ok) {
