@@ -11,11 +11,18 @@
  * If settings are wrong: searching "esoteric" WOULD return that quote
  */
 
-const MEILI_URL = process.env.NEXT_PUBLIC_MEILI_URL || 'https://cool-quotes.onrender.com';
+const MEILI_URL = process.env.NEXT_PUBLIC_MEILI_URL;
 const MEILI_API_KEY = process.env.MEILI_API_KEY;
+
+if (!MEILI_URL) {
+    console.error('Error: NEXT_PUBLIC_MEILI_URL environment variable is required');
+    console.error('Please ensure your .env.local file is properly configured.');
+    process.exit(1);
+}
 
 if (!MEILI_API_KEY) {
     console.error('Error: MEILI_API_KEY environment variable is required');
+    console.error('Please ensure your .env.local file is properly configured.');
     process.exit(1);
 }
 
@@ -50,9 +57,9 @@ async function testSearch() {
                     console.log('    Authors:', hit.authors);
 
                     // Check if "esoteric" appears in the quote text
-                    const inQuote = hit.quote.toLowerCase().includes('esoteric');
-                    const inRef = hit.references?.some(r => r.toLowerCase().includes('esoteric'));
-                    const inAuthor = hit.authors?.some(a => a.toLowerCase().includes('esoteric'));
+                    const inQuote = hit.quote?.toLowerCase().includes('esoteric') || false;
+                    const inRef = hit.references?.some(r => r?.toLowerCase().includes('esoteric')) || false;
+                    const inAuthor = hit.authors?.some(a => a?.toLowerCase().includes('esoteric')) || false;
 
                     console.log(`    "esoteric" found in:`);
                     if (inQuote) console.log('      ✓ Quote text');

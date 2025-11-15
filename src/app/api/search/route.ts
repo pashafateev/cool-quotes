@@ -43,7 +43,9 @@ export async function POST(request: NextRequest) {
             body: JSON.stringify({
                 q: query,
                 limit: 200,
-                attributesToSearchOn: ['quote'], // restrict matches to quote text only
+                // Query-level restriction (MeiliSearch v1.3+): Only search within the quote field
+                // This provides additional safety even if index-level searchableAttributes is configured
+                attributesToSearchOn: ['quote'],
             }),
         });
 

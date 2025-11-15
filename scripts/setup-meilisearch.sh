@@ -2,7 +2,9 @@
 
 # Load environment variables from .env.local
 if [ -f .env.local ]; then
-  export $(grep -v '^#' .env.local | xargs)
+  set -a
+  source .env.local
+  set +a
 fi
 
 # Run the setup script

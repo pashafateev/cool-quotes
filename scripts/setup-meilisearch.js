@@ -7,25 +7,35 @@
  * Run this script once when setting up the search index or after recreating the index.
  *
  * Usage:
- *   node -r dotenv/config scripts/setup-meilisearch.js
- *   OR (if dotenv is not installed):
- *   MEILI_API_KEY=your_key node scripts/setup-meilisearch.js
+ *   npm run setup-search
+ *   OR with environment variables set directly:
+ *   NEXT_PUBLIC_MEILI_URL=https://your-url.com MEILI_API_KEY=your_key node scripts/setup-meilisearch.js
  *
  * Environment variables required:
- *   - NEXT_PUBLIC_MEILI_URL: MeiliSearch server URL (defaults to https://cool-quotes.onrender.com)
+ *   - NEXT_PUBLIC_MEILI_URL: MeiliSearch server URL
  *   - MEILI_API_KEY: MeiliSearch API key for authentication
  */
 
-const MEILI_URL = process.env.NEXT_PUBLIC_MEILI_URL || 'https://cool-quotes.onrender.com';
+const MEILI_URL = process.env.NEXT_PUBLIC_MEILI_URL;
 const MEILI_API_KEY = process.env.MEILI_API_KEY;
+
+if (!MEILI_URL) {
+    console.error('Error: NEXT_PUBLIC_MEILI_URL environment variable is required');
+    console.error('\nPlease set the MeiliSearch server URL:');
+    console.error('  1. Add to .env.local file:');
+    console.error('     NEXT_PUBLIC_MEILI_URL=https://your-meilisearch-url.com');
+    console.error('\n  2. Or set directly when running:');
+    console.error('     NEXT_PUBLIC_MEILI_URL=https://your-url.com npm run setup-search');
+    process.exit(1);
+}
 
 if (!MEILI_API_KEY) {
     console.error('Error: MEILI_API_KEY environment variable is required');
-    console.error('\nTo run this script, use one of these methods:');
-    console.error('  1. Set environment variable directly:');
-    console.error('     MEILI_API_KEY=your_key node scripts/setup-meilisearch.js');
-    console.error('\n  2. Or load from .env.local (requires dotenv):');
-    console.error('     npm install dotenv && node -r dotenv/config scripts/setup-meilisearch.js');
+    console.error('\nPlease set the MeiliSearch API key:');
+    console.error('  1. Add to .env.local file:');
+    console.error('     MEILI_API_KEY=your_api_key');
+    console.error('\n  2. Or set directly when running:');
+    console.error('     MEILI_API_KEY=your_key npm run setup-search');
     process.exit(1);
 }
 
@@ -44,8 +54,10 @@ async function waitForTask(taskUid, maxAttempts = 10) {
             } else if (task.status === 'failed') {
                 throw new Error(`Task failed: ${task.error}`);
             }
-            // Status is 'enqueued' or 'processing', wait and try again
-            await new Promise(resolve => setTimeout(resolve, 500));
+            // Status is 'enqueued' or 'processing', wait and try again with exponential backoff
+            // Start at 200ms, double each time, cap at 2000ms
+            const delay = Math.min(200 * Math.pow(2, i), 2000);
+            await new Promise(resolve => setTimeout(resolve, delay));
         } else {
             throw new Error(`Failed to check task status: ${taskResponse.status}`);
         }
