@@ -4,9 +4,10 @@ export const stopWords = new Set([
     "an", "are", "was", "were", "but", "not", "have", "has", "had", "they",
     "you", "i", "he", "she", "we", "their", "his", "her", "its", "them",
     "so", "if", "then", "there", "when", "where", "who", "what", "how",
-    "all", "can", "will", "would", "should", "could", "do", "does", "did",
-    "no", "yes", "about", "up", "down", "out", "over", "under", "again",
-    "more", "most", "some", "such", "only", "own", "same", "too", "very"
+    "all", "can", "will", "could", "do", "does", "did",
+    "no", "about", "up", "down", "out", "over", "again",
+    "more", "most", "some", "such", "only", "own", "same", "too", "very",
+  "me", "also"
   ]);
   
   export function cleanWord(word: string): string {
