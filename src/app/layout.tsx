@@ -1,6 +1,7 @@
 import "./globals.css";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import ThemeRegistry from "@/theme/ThemeRegistry";
+import { Analytics } from "@vercel/analytics/next";
 
 export default function RootLayout({
   children,
@@ -16,6 +17,7 @@ export default function RootLayout({
         <AppRouterCacheProvider>
           <ThemeRegistry>{children}</ThemeRegistry>
         </AppRouterCacheProvider>
+        <Analytics />
       </body>
     </html>
   );
